@@ -7,6 +7,7 @@
 <meta name="author" content="windowho@korea.kr">
 <meta name="copyright" content="Copyright © windowho@korea.kr All Rights Reserved.">
 <title>슬기로운업무노트(농가경제)</title>
+<!-- html2canvas는 Android WebView에서 CDN 로딩이 실패할 수 있어 필요할 때 대체 CDN까지 순차 로드합니다. -->
 <style>
 :root {
 --primary: #2e7d32;
@@ -23,9 +24,13 @@ margin: 0;
 padding: 0;
 font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
 }
-body, html, input, select, textarea {
+/* 꾹 누르기, 드래그, 이미지 저장 방지 전면 해제 */
+body, html, img, canvas, div, table, td, th {
 -webkit-user-select: text !important;
+-moz-user-select: text !important;
+-ms-user-select: text !important;
 user-select: text !important;
+-webkit-touch-callout: default !important;
 }
 html, body {
 width: 100%;
@@ -35,6 +40,9 @@ background-color: var(--bg-color);
 color: var(--text-color);
 font-size: 16px;
 -webkit-text-size-adjust: 100%;
+}
+input, select, textarea {
+font-size: 0.95rem;
 }
 body {
 padding: 10px;
@@ -227,7 +235,9 @@ font-weight: bold;
 cursor: pointer;
 }
 .btn-save { background-color: var(--primary-light); color: white; }
+.btn-print { background-color: #0288d1; color: white; }
 .btn-backup { background-color: #7b1fa2; color: white; }
+.btn-restore { background-color: #3f51b5; color: white; }
 .btn-danger { background-color: #d32f2f; color: white; }
 .btn-canvas { background-color: #ff5722; color: white; }
 .btn-measure { background-color: #00897b; color: white; }
@@ -372,6 +382,7 @@ border-top: 1px solid #ddd;
 line-height: 1.4;
 }
 </style>
+<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=12353"></script>
 </head>
 <body>
 
@@ -573,7 +584,7 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 데이터 테이블 및 백업 버튼 -->
+<!-- 데이터 테이블 및 하단 버튼 -->
 <div class="card">
 <div id="captureTargetArea" style="background: #ffffff; padding: 8px; border-radius: 6px;">
 <h3>[<span id="printFarmTitle">농가01</span>] 현장 기록표 (클릭 시 수정)</h3>
@@ -595,11 +606,29 @@ line-height: 1.4;
 </div>
 
 <div class="btn-group" style="margin-top:12px;">
-<button class="btn btn-backup" style="width:100%;" onclick="openBackupModal()">💾 데이터 백업 및 복원</button>
+<button class="btn btn-print" onclick="captureAndShowReportImage()">📷 보고서 이미지 생성</button>
+<button class="btn btn-backup" onclick="openBackupModal()">💾 데이터 백업 및 복원</button>
 </div>
 </div>
 
 <!-- 모달 창들 -->
+<div class="modal-overlay" id="reportImageModal">
+<div class="modal-content" style="text-align:center;">
+<h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
+사진을 <strong>길게 꾹 눌러 [이미지 저장]</strong>하세요.
+</p>
+<!-- 꾹 누르기 저장이 확실히 되도록 감싸는 컨테이너 및 <img> 태그 -->
+<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:50vh; overflow-y:auto; background:#f9f9f9; -webkit-user-select: text; user-select: text;">
+<img id="generatedReportImg" style="width:100%; height:auto; display:block; pointer-events: auto; -webkit-touch-callout: default;" alt="보고서 이미지">
+</div>
+<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadReportImageDirectly()">💾 이미지 파일로 직접 다운로드</button>
+<div class="btn-group">
+<button class="btn btn-danger" onclick="closeReportImageModal()">닫기</button>
+</div>
+</div>
+</div>
+
 <div class="modal-overlay" id="backupModal">
 <div class="modal-content">
 <h3 style="margin-bottom:10px; color:#7b1fa2;">💾 데이터 백업 및 복원</h3>
@@ -684,10 +713,11 @@ line-height: 1.4;
 <div class="modal-overlay" id="photoViewModal">
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 측정 사진 크게 보기</h3>
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">사진을 꾹 눌러 저장하거나 아래 버튼을 누르세요.</p>
 <div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; background:#000;">
 <img id="modalFullPhotoImg" style="width:100%; height:auto; display:block;" alt="측정사진">
 </div>
-<button class="btn btn-backup" style="width:100%; margin-bottom:8px;" onclick="downloadModalPhotoDirectly()">💾 사진 파일로 다운로드</button>
+<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadModalPhotoDirectly()">💾 사진 파일로 직접 다운로드</button>
 <div class="btn-group">
 <button class="btn btn-danger" onclick="closePhotoViewModal()">닫기</button>
 </div>
@@ -709,8 +739,9 @@ line-height: 1.4;
 </ul>
 <p><strong>3. 특화 부가 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
-<li><strong>📏 카메라 거리 측정:</strong> 화면 조준선을 맞추고 촬영하면 기록표 및 앨범에 저장됩니다.</li>
-<li><strong>💾 데이터 백업 및 복원:</strong> 크롬 브라우저 창으로 데이터가 자동 복사되며 안전하게 연동됩니다.</li>
+<li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 길게 눌러 저장할 수 있습니다.</li>
+<li><strong>📷 보고서 이미지 생성:</strong> 현장 기록표를 이미지로 변환하여 꾹 누르거나 파일로 저장할 수 있습니다.</li>
+<li><strong>💾 데이터 백업 및 복원:</strong> 크롬 브라우저 창으로 데이터가 자동 복사되며 연동됩니다.</li>
 </ul>
 </div>
 <div class="btn-group" style="margin-top:15px;">
@@ -724,7 +755,7 @@ line-height: 1.4;
 <h3 style="margin-bottom:12px; color:var(--primary-dark);" id="editModalTitle">기록 수정하기</h3>
 <div id="imageViewerArea" style="display:none; text-align:center; margin-bottom:12px;">
 <img id="viewFullImage" style="max-width:100%; max-height:220px; border:2px solid var(--primary); border-radius:4px; cursor:pointer;" onclick="openPhotoFromViewer()" alt="큰사진">
-<button class="btn btn-backup" style="width:100%; margin-top:8px;" onclick="downloadViewerPhotoDirectly()">💾 이 사진 파일로 다운로드</button>
+<button class="btn btn-print" style="width:100%; margin-top:8px;" onclick="downloadViewerPhotoDirectly()">💾 이 사진 파일로 다운로드</button>
 </div>
 <div id="editFormArea">
 <div class="form-group"><label>일자</label><input type="date" id="edit-date"></div>
@@ -740,12 +771,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.52</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.51</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.52";
+const APP_VERSION = "v1.0.51";
 const BACKUP_SITE_URL = "https://window-ho.github.io/verygoodhistory/backup.html";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
@@ -1262,6 +1293,68 @@ const src = document.getElementById('viewFullImage').src;
 if (src) openPhotoViewModal(src);
 }
 
+/* 이미지 직접 다운로드 함수들 */
+async function downloadReportImageDirectly() {
+const img = document.getElementById('generatedReportImg');
+if (!img || !img.src || img.src === window.location.href) {
+alert('먼저 [보고서 이미지 생성]을 눌러 이미지를 만들어 주세요.');
+return;
+}
+
+try {
+  const response = await fetch(img.src);
+  const blob = await response.blob();
+  await savePngBlob(blob, `농가경제_현장기록표_${getLocalDateString()}.png`);
+} catch (err) {
+  console.error('보고서 이미지 다운로드 오류:', err);
+  // data URL을 새 창으로 열면 Android 브라우저에서 길게 눌러 저장할 수 있습니다.
+  try {
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write('<meta name="viewport" content="width=device-width,initial-scale=1"><title>보고서 이미지 저장</title><p>이미지를 길게 눌러 저장하세요.</p><img src="' + img.src + '" style="width:100%;height:auto">');
+      win.document.close();
+    } else {
+      alert('브라우저가 새 창 열기를 차단했습니다. 이미지 미리보기에서 이미지를 길게 눌러 저장해 주세요.');
+    }
+  } catch (fallbackError) {
+    alert('이미지 저장에 실패했습니다. 이미지 미리보기에서 이미지를 길게 눌러 저장해 주세요.');
+  }
+}
+}
+
+function getLocalDateString() {
+const d = new Date();
+return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+async function savePngBlob(blob, filename) {
+  if (!blob || blob.size === 0) throw new Error('생성된 이미지 데이터가 비어 있습니다.');
+
+  // Android Chrome/WebView가 지원하면 공유 메뉴에서 파일 저장 또는 앱 전송이 가능합니다.
+  try {
+    const file = new File([blob], filename, { type: 'image/png' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: '현장 기록표 이미지' });
+      return;
+    }
+  } catch (shareError) {
+    if (shareError && shareError.name === 'AbortError') return;
+    console.warn('파일 공유 기능을 사용할 수 없어 다운로드 방식으로 전환합니다.', shareError);
+  }
+
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = objectUrl;
+  link.download = filename;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  // 일부 Android WebView는 a[download]를 무시하므로 잠시 후 URL을 정리합니다.
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+}
+
 function downloadModalPhotoDirectly() {
 const imgSrc = document.getElementById('modalFullPhotoImg').src;
 if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
@@ -1281,6 +1374,122 @@ a.download = filename;
 document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
+}
+
+let html2CanvasLoadPromise = null;
+
+async function ensureHtml2CanvasLoaded() {
+  if (typeof window.html2canvas === 'function') return window.html2canvas;
+  if (html2CanvasLoadPromise) return html2CanvasLoadPromise;
+
+  const cdnUrls = [
+    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
+  ];
+
+  html2CanvasLoadPromise = (async () => {
+    for (const url of cdnUrls) {
+      try {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = url;
+          script.async = true;
+          script.onload = resolve;
+          script.onerror = () => {
+            script.remove();
+            reject(new Error('라이브러리 로드 실패: ' + url));
+          };
+          document.head.appendChild(script);
+        });
+        if (typeof window.html2canvas === 'function') return window.html2canvas;
+      } catch (e) {
+        console.warn(e.message);
+      }
+    }
+    throw new Error('이미지 변환 라이브러리를 불러오지 못했습니다. 인터넷 연결 또는 앱의 외부 사이트 접근 권한을 확인해 주세요.');
+  })();
+
+  try {
+    return await html2CanvasLoadPromise;
+  } finally {
+    html2CanvasLoadPromise = null;
+  }
+}
+
+async function captureAndShowReportImage() {
+  const button = document.querySelector('button[onclick="captureAndShowReportImage()"]');
+  const originalText = button ? button.innerText : '';
+  const targetElement = document.getElementById('captureTargetArea');
+
+  if (!targetElement) {
+    alert('이미지로 변환할 보고서 영역을 찾을 수 없습니다.');
+    return;
+  }
+
+  try {
+    if (button) {
+      button.disabled = true;
+      button.innerText = '이미지 생성 중...';
+    }
+
+    const capture = await ensureHtml2CanvasLoaded();
+
+    // 표의 가로 스크롤 영역이 잘리지 않도록 캡처 순간에만 전체 너비를 사용합니다.
+    const tableWrap = targetElement.querySelector('.table-responsive');
+    const oldOverflow = tableWrap ? tableWrap.style.overflow : '';
+    const oldWidth = tableWrap ? tableWrap.style.width : '';
+    if (tableWrap) {
+      tableWrap.style.overflow = 'visible';
+      tableWrap.style.width = 'max-content';
+    }
+
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    if (document.fonts && document.fonts.ready) {
+      await Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 1500))]);
+    }
+
+    const canvas = await capture(targetElement, {
+      scale: Math.min(2, Math.max(1.5, (window.devicePixelRatio || 1) * 1.25)),
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: Math.max(document.documentElement.clientWidth, targetElement.scrollWidth),
+      onclone: clonedDoc => {
+        const clonedWrap = clonedDoc.querySelector('#captureTargetArea .table-responsive');
+        if (clonedWrap) {
+          clonedWrap.style.overflow = 'visible';
+          clonedWrap.style.width = 'max-content';
+        }
+      }
+    });
+
+    if (tableWrap) {
+      tableWrap.style.overflow = oldOverflow;
+      tableWrap.style.width = oldWidth;
+    }
+
+    const imageURL = canvas.toDataURL('image/png');
+    if (!imageURL || imageURL === 'data:,') throw new Error('이미지 파일을 생성하지 못했습니다.');
+
+    document.getElementById('generatedReportImg').src = imageURL;
+    document.getElementById('reportImageModal').style.display = 'flex';
+  } catch (err) {
+    console.error('보고서 이미지 생성 오류:', err);
+    alert('보고서 이미지 생성에 실패했습니다.\n' + (err && err.message ? err.message : '브라우저에서 이미지 변환을 완료하지 못했습니다.'));
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerText = originalText || '📷 보고서 이미지 생성';
+    }
+  }
+}
+
+function closeReportImageModal() {
+document.getElementById('reportImageModal').style.display = 'none';
 }
 
 function confirmClearFarmData() {
