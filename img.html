@@ -1,13 +1,100 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,nofollow"><title>슬기로운업무노트 - 보고서 이미지 저장</title>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>슬기로운업무노트 - 보고서 이미지 저장</title>
 <style>
-*{box-sizing:border-box}body{margin:0;padding:16px;background:linear-gradient(135deg,#f0f4f8,#d9e2ec);font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;color:#243b53;min-height:100vh;display:flex;justify-content:center;align-items:center}.card{background:#fff;width:100%;max-width:500px;padding:24px 18px;border-radius:20px;box-shadow:0 12px 30px #102a431a}h1{text-align:center;font-size:21px;margin:0 0 8px}.sub{text-align:center;color:#627d98;font-size:13px;line-height:1.5;margin:0 0 18px}.panel{padding:14px;background:#f8fafc;border:1px solid #d9e2ec;border-radius:13px}.hint{font-size:12px;line-height:1.55;color:#52667a;margin:6px 0 10px}.btn{display:block;width:100%;border:0;border-radius:9px;padding:13px 10px;margin:8px 0;background:#2e7d32;color:#fff;font-size:14px;font-weight:700}.btn.blue{background:#3949ab}.btn:disabled{opacity:.45}textarea{width:100%;min-height:100px;padding:10px;border:1px solid #bcccdc;border-radius:8px;font-size:10px;user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}#preview{display:block;width:100%;height:auto;border:1px solid #d9e2ec;border-radius:8px;margin:12px 0;background:#fff}.status{font-size:12px;line-height:1.5;color:#52667a;margin:9px 0;overflow-wrap:anywhere}.footer{text-align:center;font-size:10px;color:#829ab1;border-top:1px solid #e2e8f0;margin-top:15px;padding-top:12px}
-</style><script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=13782"></script></head><body><main class="card"><h1>슬기로운업무노트(농가경제)</h1><p class="sub">보고서 이미지 생성·PNG 저장 전용 페이지</p><section class="panel"><p class="hint">앱에서 <b>보고서 이미지 생성 → 이미지로 저장</b>을 누른 뒤, 아래 버튼을 눌러 이미지를 가져오세요.</p><button class="btn blue" onclick="readClipboardImage()">📋 클립보드에서 이미지 불러오기</button><div id="status" class="status">아직 이미지가 불러와지지 않았습니다.</div><img id="preview" alt="보고서 이미지 미리보기" hidden><button id="downloadBtn" class="btn" onclick="downloadPng()" disabled>📥 PNG 이미지 저장</button><textarea id="manualData" placeholder="클립보드 불러오기에 실패하면 여기를 길게 눌러 [붙여넣기]를 선택하세요."></textarea><button class="btn blue" onclick="loadPastedImage()">붙여넣은 이미지 불러오기</button></section><div class="footer">© 2026 슬기로운업무노트(농가경제) · windowho@korea.kr</div></main>
+*{box-sizing:border-box}body{margin:0;padding:16px;background:linear-gradient(135deg,#f0f4f8,#d9e2ec);font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;color:#243b53;min-height:100vh;display:flex;justify-content:center;align-items:center}.card{background:#fff;width:100%;max-width:500px;padding:24px 18px;border-radius:20px;box-shadow:0 12px 30px #102a431a}h1{text-align:center;font-size:21px;margin:0 0 8px}.sub{text-align:center;color:#627d98;font-size:13px;line-height:1.5;margin:0 0 18px}.panel{padding:14px;background:#f8fafc;border:1px solid #d9e2ec;border-radius:13px}.hint{font-size:12px;line-height:1.55;color:#52667a;margin:6px 0 10px}.btn{display:block;width:100%;border:0;border-radius:9px;padding:13px 10px;margin:8px 0;background:#2e7d32;color:#fff;font-size:14px;font-weight:700}.btn.blue{background:#3949ab}.btn:disabled{opacity:.45}textarea{width:100%;min-height:70px;padding:8px;border:1px solid #bcccdc;border-radius:8px;font-size:10px;user-select:text;-webkit-user-select:text;-webkit-touch-callout:default;margin-bottom:8px}#preview{display:block;width:100%;height:auto;border:1px solid #d9e2ec;border-radius:8px;margin:12px 0;background:#fff}.status{font-size:12px;line-height:1.5;color:#52667a;margin:9px 0;overflow-wrap:anywhere}.footer{text-align:center;font-size:10px;color:#829ab1;border-top:1px solid #e2e8f0;margin-top:15px;padding-top:12px}
+</style>
+</head>
+<body>
+<main class="card">
+<h1>슬기로운업무노트(농가경제)</h1>
+<p class="sub">보고서 이미지 생성·PNG 저장 전용 페이지</p>
+<section class="panel">
+<p class="hint">페이지가 열리면 클립보드의 이미지를 자동으로 불러옵니다. (불러오지 못할 경우 아래 칸을 길게 눌러 [붙여넣기] 하세요.)</p>
+<textarea id="manualData" placeholder="자동 불러오기가 안 되면 이곳을 길게 눌러 [붙여넣기] 하세요." oninput="loadPastedImage()"></textarea>
+<div id="status" class="status">이미지를 불러오는 중입니다...</div>
+<img id="preview" alt="보고서 이미지 미리보기" hidden>
+<button id="downloadBtn" class="btn" onclick="downloadPng()" disabled>📥 PNG 이미지 저장</button>
+<button class="btn blue" onclick="readClipboardImage()" style="margin-top:10px;">📋 다시 불러오기</button>
+</section>
+<div class="footer">© 2026 슬기로운업무노트(농가경제) · windowho@korea.kr</div>
+</main>
 <script>
-let imageData='';function setStatus(t,ok=false){const s=document.getElementById('status');s.textContent=t;s.style.color=ok?'#2e7d32':'#52667a';}
-async function readClipboardImage(){setStatus('클립보드에서 이미지를 읽는 중입니다...');try{if(!navigator.clipboard||!navigator.clipboard.readText)throw new Error('클립보드 읽기를 지원하지 않습니다.');const value=await navigator.clipboard.readText();showImage(value);}catch(e){setStatus('자동으로 불러오지 못했습니다: '+e.message+' 입력란을 길게 눌러 [붙여넣기]를 선택해 주세요.');}}
-function showImage(value){if(!/^data:image\/png;base64,/.test(value))throw new Error('PNG 이미지 데이터가 아닙니다.');const img=document.getElementById('preview');img.src=value;img.hidden=false;imageData=value;document.getElementById('downloadBtn').disabled=false;setStatus('이미지를 정상적으로 불러왔습니다. [PNG 이미지 저장]을 누르세요.',true);}
-function loadPastedImage(){try{showImage(document.getElementById('manualData').value.trim());}catch(e){setStatus('이미지 확인 실패: '+e.message);}}
-function downloadPng(){if(!imageData)return;try{const raw=atob(imageData.split(',')[1]);const bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);const blob=new Blob([bytes],{type:'image/png'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='농가경제_현장기록표_'+localDate()+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);setStatus('PNG 저장을 요청했습니다. 크롬 다운로드 목록을 확인하세요.',true);}catch(e){setStatus('이미지 파일 저장에 실패했습니다: '+e.message);}}
-function localDate(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-</script></body></html>
+let imageData='';
+function setStatus(t,ok=false){const s=document.getElementById('status');s.textContent=t;s.style.color=ok?'#2e7d32':'#52667a';}
+
+window.addEventListener('DOMContentLoaded', () => {
+  // 페이지 열리자마자 자동 실행
+  readClipboardImage();
+});
+
+async function readClipboardImage(){
+  setStatus('클립보드 데이터를 확인하는 중...');
+  try {
+    if(!navigator.clipboard || !navigator.clipboard.readText) throw new Error('지원되지 않음');
+    const value = await navigator.clipboard.readText();
+    if (value && value.startsWith('data:image/png;base64,')) {
+      document.getElementById('manualData').value = value;
+      showImage(value.trim());
+      return;
+    }
+  } catch(e) {}
+  
+  // 클립보드 읽기 보안 차단 시 수동 입력란 포커스
+  setStatus('자동 불러오기가 차단되었습니다. 아래 입력란을 길게 눌러 [붙여넣기] 해 주세요.');
+  document.getElementById('manualData').focus();
+}
+
+function showImage(value){
+  if(!value.startsWith('data:image/png;base64,')) throw new Error('올바른 이미지 형식이 아닙니다.');
+  const img=document.getElementById('preview');
+  img.src=value;
+  img.hidden=false;
+  imageData=value;
+  document.getElementById('downloadBtn').disabled=false;
+  setStatus('이미지 미리보기가 완료되었습니다! 아래 [PNG 이미지 저장]을 누르세요.',true);
+}
+
+function loadPastedImage(){
+  try {
+    const val = document.getElementById('manualData').value.trim();
+    if(val.startsWith('data:image/png;base64,')) {
+      showImage(val);
+    }
+  } catch(e) {
+    setStatus('이미지 데이터 대기 중...');
+  }
+}
+
+function downloadPng(){
+  if(!imageData)return;
+  try {
+    const raw=atob(imageData.split(',')[1]);
+    const bytes=new Uint8Array(raw.length);
+    for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+    const blob=new Blob([bytes],{type:'image/png'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='농가경제_현장기록표_'+localDate()+'.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    setStatus('PNG 저장을 요청했습니다. 다운로드 폴더를 확인하세요.',true);
+  } catch(e) {
+    setStatus('저장 실패: '+e.message);
+  }
+}
+
+function localDate(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+</script>
+</body>
+</html>
