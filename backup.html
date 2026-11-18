@@ -1,287 +1,1818 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- 검색엔진 노출 완벽 차단 -->
-  <meta name="robots" content="noindex, nofollow">
-  <title>슬기로운업무노트(농가경제) - 데이터 백업 및 복원 센터</title>
-  <style>
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
-      -webkit-user-select: none; 
-      -moz-user-select: none;    
-      -ms-user-select: none;     
-      user-select: none;         
-    }
-    body {
-      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      color: #102a43;
-    }
-    .card {
-      background: #ffffff;
-      width: 100%;
-      max-width: 440px;
-      border-radius: 24px;
-      padding: 36px 26px;
-      box-shadow: 0 12px 30px rgba(16, 42, 67, 0.1);
-      text-align: center;
-    }
-    /* 파란색 배경 + 흰색 둥근 박스 안 아이콘 */
-    .app-icon {
-      width: 72px;
-      height: 72px;
-      background: #2e7d32;
-      border-radius: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 0 auto 18px;
-      box-shadow: 0 6px 15px rgba(46, 125, 50, 0.3);
-    }
-    .icon-inner-box {
-      width: 44px;
-      height: 44px;
-      background: #ffffff;
-      border-radius: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      font-size: 22px;
-      margin-bottom: 8px;
-      color: #102a43;
-      letter-spacing: -0.5px;
-    }
-    .version {
-      display: inline-block;
-      background: #e8f5e9;
-      color: #2e7d32;
-      font-size: 13px;
-      font-weight: bold;
-      padding: 4px 12px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-    }
-    .desc {
-      font-size: 14.5px;
-      font-weight: bold;
-      line-height: 1.4;
-      color: #102a43;
-      margin-bottom: 8px;
-      word-break: keep-all;
-    }
-    .sub-desc {
-      font-size: 13px;
-      line-height: 1.55;
-      color: #486581;
-      margin-bottom: 20px;
-      word-break: keep-all;
-    }
-    .section-box {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 16px 14px;
-      text-align: left;
-      margin-bottom: 16px;
-    }
-    .section-box h3 {
-      font-size: 13.5px;
-      color: #1b5e20;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
-    textarea {
-      width: 100%;
-      height: 110px;
-      padding: 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      resize: none;
-      margin-bottom: 8px;
-      background: #fff;
-      -webkit-user-select: text;
-      user-select: text;
-    }
-    .action-btn {
-      display: block;
-      width: 100%;
-      background: #2e7d32;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: bold;
-      padding: 12px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
-      margin-bottom: 6px;
-    }
-    .action-btn:active {
-      transform: scale(0.98);
-      background: #1b5e20;
-    }
-    .btn-restore {
-      background: #3f51b5;
-      box-shadow: 0 4px 12px rgba(63, 81, 181, 0.25);
-    }
-    .btn-restore:active {
-      background: #1a237e;
-    }
-    .file-input {
-      width: 100%;
-      font-size: 0.8rem;
-      margin-bottom: 8px;
-      padding: 6px;
-      background: #fff;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-    }
-    .guide {
-      margin-top: 12px;
-      font-size: 11.5px;
-      color: #627d98;
-      line-height: 1.5;
-      background: #f0f4f8;
-      padding: 10px;
-      border-radius: 10px;
-      text-align: left;
-      word-break: keep-all;
-    }
-    .copyright {
-      margin-top: 16px;
-      font-size: 11px;
-      color: #829ab1;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 12px;
-      line-height: 1.4;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="author" content="windowho@korea.kr">
+<meta name="copyright" content="Copyright © windowho@korea.kr All Rights Reserved.">
+<title>슬기로운업무노트(농가경제)</title>
+<!-- html2canvas는 Android WebView에서 CDN 로딩이 실패할 수 있어 필요할 때 대체 CDN까지 순차 로드합니다. -->
+<style>
+:root {
+--primary: #2e7d32;
+--primary-light: #4caf50;
+--primary-dark: #1b5e20;
+--bg-color: #f4f6f8;
+--card-bg: #ffffff;
+--text-color: #333333;
+--border-color: #cccccc;
+}
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
+}
+/* 꾹 누르기, 드래그, 이미지 저장 방지 전면 해제 */
+body, html, img, canvas, div, table, td, th {
+-webkit-user-select: text !important;
+-moz-user-select: text !important;
+-ms-user-select: text !important;
+user-select: text !important;
+-webkit-touch-callout: default !important;
+}
+html, body {
+width: 100%;
+max-width: 100vw;
+overflow-x: hidden;
+background-color: var(--bg-color);
+color: var(--text-color);
+font-size: 16px;
+-webkit-text-size-adjust: 100%;
+}
+input, select, textarea {
+font-size: 0.95rem;
+}
+body {
+padding: 10px;
+max-width: 850px;
+margin: 0 auto;
+}
+header {
+background-color: var(--primary);
+color: white;
+padding: 15px 10px;
+text-align: center;
+border-radius: 8px;
+margin-bottom: 15px;
+position: relative;
+width: 100%;
+}
+header h1 { font-size: 1.2rem; }
+.menu-btn {
+position: absolute;
+top: 12px;
+right: 10px;
+background: rgba(255, 255, 255, 0.2);
+color: white;
+border: 1px solid white;
+padding: 6px 10px;
+border-radius: 4px;
+font-size: 0.95rem;
+cursor: pointer;
+}
+.dropdown-menu {
+display: none;
+position: absolute;
+top: 55px;
+right: 10px;
+background: white;
+color: #333;
+border-radius: 6px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+z-index: 2000;
+width: 220px;
+text-align: left;
+overflow: hidden;
+}
+.dropdown-menu button {
+width: 100%;
+padding: 12px 15px;
+background: none;
+border: none;
+border-bottom: 1px solid #eee;
+text-align: left;
+font-size: 0.9rem;
+cursor: pointer;
+font-weight: bold;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.dropdown-menu button:hover {
+background-color: #f1f8e9;
+color: var(--primary);
+}
+.dropdown-menu .menu-danger {
+color: #d32f2f;
+border-top: 2px solid #ffcdd2;
+}
+.farm-selector-box {
+background: #e8f5e9;
+border: 2px solid var(--primary);
+padding: 10px;
+border-radius: 8px;
+margin-bottom: 15px;
+width: 100%;
+}
+.farm-selector-row {
+display: flex;
+align-items: center;
+gap: 6px;
+flex-wrap: wrap;
+margin-bottom: 8px;
+}
+.farm-selector-row label {
+font-weight: bold;
+font-size: 0.85rem;
+color: var(--primary-dark);
+white-space: nowrap;
+}
+.farm-selector-row select {
+padding: 6px;
+font-weight: bold;
+font-size: 0.85rem;
+border-radius: 4px;
+border: 1px solid var(--border-color);
+}
+.farm-info-summary {
+background: #ffffff;
+border: 1px solid #c8e6c9;
+padding: 8px;
+border-radius: 6px;
+font-size: 0.8rem;
+color: #2e7d32;
+line-height: 1.4;
+word-break: break-all;
+}
+.btn-edit-farm { background-color: #ff9800; color: white; padding: 6px 10px; border: none; border-radius: 4px; font-weight: bold; font-size: 0.85rem; cursor: pointer; white-space: nowrap; }
+.btn-add-farm { background-color: #2196f3; color: white; padding: 6px 10px; border: none; border-radius: 4px; font-weight: bold; font-size: 0.85rem; cursor: pointer; white-space: nowrap; }
+.main-tabs {
+display: flex;
+gap: 4px;
+margin-bottom: 15px;
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+width: 100%;
+}
+.tab-btn {
+flex: 1;
+min-width: 75px;
+padding: 10px 4px;
+background: #e0e0e0;
+border: none;
+border-radius: 6px;
+font-weight: bold;
+font-size: 0.8rem;
+cursor: pointer;
+white-space: nowrap;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 4px;
+}
+.tab-btn.active { background-color: var(--primary); color: white; }
+.card {
+background: var(--card-bg);
+padding: 12px;
+border-radius: 8px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+margin-bottom: 15px;
+width: 100%;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.form-group { margin-bottom: 10px; }
+label {
+display: block;
+margin-bottom: 4px;
+font-weight: bold;
+font-size: 0.85rem;
+}
+input, select, textarea {
+width: 100%;
+padding: 8px;
+border: 1px solid var(--border-color);
+border-radius: 4px;
+box-sizing: border-box;
+}
+.radio-btn-group {
+display: flex;
+gap: 8px;
+margin-bottom: 10px;
+}
+.radio-btn {
+flex: 1;
+padding: 8px;
+text-align: center;
+border: 2px solid var(--primary);
+border-radius: 6px;
+background: white;
+color: var(--primary);
+font-weight: bold;
+font-size: 0.85rem;
+cursor: pointer;
+}
+.radio-btn.active {
+background: var(--primary);
+color: white;
+}
+.btn-group {
+display: flex;
+gap: 8px;
+margin-top: 12px;
+flex-wrap: wrap;
+}
+.btn {
+flex: 1;
+min-width: 100px;
+padding: 10px;
+border: none;
+border-radius: 6px;
+font-size: 0.85rem;
+font-weight: bold;
+cursor: pointer;
+}
+.btn-save { background-color: var(--primary-light); color: white; }
+.btn-print { background-color: #0288d1; color: white; }
+.btn-backup { background-color: #7b1fa2; color: white; }
+.btn-restore { background-color: #3f51b5; color: white; }
+.btn-danger { background-color: #d32f2f; color: white; }
+.btn-canvas { background-color: #ff5722; color: white; }
+.btn-measure { background-color: #00897b; color: white; }
+
+.summary-box {
+background: #f1f8e9;
+border-left: 4px solid var(--primary);
+padding: 10px;
+margin-bottom: 15px;
+border-radius: 4px;
+font-size: 0.85rem;
+}
+.summary-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 6px;
+margin-top: 6px;
+font-weight: bold;
+}
+.table-responsive {
+width: 100%;
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+}
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 8px;
+font-size: 0.8rem;
+min-width: 450px;
+}
+th, td {
+border: 1px solid #ddd;
+padding: 6px 4px;
+text-align: center;
+word-break: break-all;
+}
+th { background-color: #f2f2f2; }
+.clickable-row { cursor: pointer; transition: background-color 0.2s; }
+.clickable-row:hover { background-color: #e8f5e9; }
+
+.modal-overlay {
+display: none;
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+background: rgba(0,0,0,0.6);
+z-index: 1000;
+justify-content: center;
+align-items: center;
+padding: 10px;
+}
+.modal-content {
+background: white;
+padding: 15px;
+border-radius: 8px;
+width: 100%;
+max-width: 500px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+max-height: 90vh;
+overflow-y: auto;
+}
+/* Android: 보고서 모달이 열려 있을 때 배경 페이지 스크롤 및 스크롤 전달 방지 */
+body.report-modal-open {
+position: fixed;
+width: 100%;
+overflow: hidden;
+left: 0;
+right: 0;
+}
+#reportImageModal {
+height: 100vh;
+height: 100dvh;
+overflow: hidden;
+overscroll-behavior: contain;
+touch-action: pan-y;
+}
+#reportImageModal .modal-content {
+max-height: 86vh;
+max-height: 86dvh;
+overflow-y: auto;
+overscroll-behavior: contain;
+-webkit-overflow-scrolling: touch;
+}
+#reportImagePreview {
+max-height: 58vh;
+max-height: 58dvh;
+overflow: auto;
+overscroll-behavior: contain;
+-webkit-overflow-scrolling: touch;
+touch-action: pan-y;
+}
+#generatedReportImg {
+display: block;
+width: 100%;
+height: auto;
+-webkit-user-select: none;
+user-select: none;
+-webkit-touch-callout: default;
+touch-action: pan-y;
+}
+#drawingCanvas {
+border: 2px dashed var(--primary);
+background: #ffffff;
+width: 100%;
+height: 220px;
+touch-action: none;
+cursor: crosshair;
+border-radius: 4px;
+}
+
+.measure-modal-content {
+background: #121212;
+color: #ffffff;
+padding: 15px;
+border-radius: 8px;
+width: 100%;
+max-width: 500px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+max-height: 95vh;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+}
+.viewfinder {
+position: relative;
+background-color: #000;
+height: 280px;
+display: flex;
+justify-content: center;
+align-items: center;
+overflow: hidden;
+border-radius: 6px;
+margin-bottom: 10px;
+border: 1px solid #333;
+}
+.viewfinder video {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+.crosshair-h {
+position: absolute;
+top: 50%;
+left: 0;
+width: 100%;
+height: 2px;
+background-color: rgba(0, 255, 204, 0.85);
+transform: translateY(-50%);
+pointer-events: none;
+}
+.crosshair-v {
+position: absolute;
+left: 50%;
+top: 0;
+width: 2px;
+height: 100%;
+background-color: rgba(0, 255, 204, 0.85);
+transform: translateX(-50%);
+pointer-events: none;
+}
+.crosshair-center {
+position: absolute;
+top: 50%;
+left: 50%;
+width: 24px;
+height: 24px;
+border: 2px solid #00ffcc;
+border-radius: 50%;
+transform: translate(-50%, -50%);
+pointer-events: none;
+}
+
+footer {
+margin-top: 20px;
+text-align: center;
+font-size: 0.75rem;
+color: #666;
+padding: 10px;
+border-top: 1px solid #ddd;
+line-height: 1.4;
+}
+</style>
+<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=13238"></script>
 </head>
-<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+<body>
 
-  <div class="card">
-    <!-- 농가 경제 아이콘 -->
-    <div class="app-icon">
-      <div class="icon-inner-box">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="#2e7d32" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L2 7L12 12L22 7L12 2Z" />
-          <path d="M2 17L12 22L22 17" />
-          <path d="M2 12L12 17L22 12" />
-        </svg>
-      </div>
-    </div>
+<div>
+<header>
+<h1>슬기로운업무노트(농가경제)</h1>
+<button class="menu-btn" onclick="toggleMenu()">☰ 메뉴</button>
+<div class="dropdown-menu" id="topDropdownMenu">
+<button onclick="switchTab('crop'); toggleMenu();">작물/파종</button>
+<button onclick="switchTab('cropInc'); toggleMenu();">농작물수입</button>
+<button onclick="switchTab('etcInc'); toggleMenu();">수입표</button>
+<button onclick="switchTab('expense'); toggleMenu();">지출표</button>
+<button onclick="switchTab('work'); toggleMenu();">작업시간</button>
+<button onclick="switchTab('tax'); toggleMenu();">조세</button>
+<hr style="border:0; border-top:1px solid #ddd;">
+<button onclick="openMeasureModal(); toggleMenu();" style="color:#00897b;">📏 카메라 거리 측정</button>
+<button onclick="openManualModal(); toggleMenu();" style="color:#2196f3;">📖 사용설명서</button>
+<button onclick="openBackupModal(); toggleMenu();" style="color:#7b1fa2;">💾 데이터 백업 및 복원</button>
+<button class="menu-danger" onclick="confirmClearFarmData(); toggleMenu();">현재농가 초기화</button>
+</div>
+</header>
 
-    <h1>슬기로운업무노트(농가경제)</h1>
-    <span class="version">데이터 백업 및 파일 센터</span>
-    
-    <p class="desc">
-      안전한 데이터 파일 변환 및 복원 솔루션
-    </p>
-    <p class="sub-desc">
-      앱에서 넘어온 데이터를 크롬 브라우저를 통해 안전한 JSON 파일로 다운로드하거나, 백업 파일을 불러와 앱으로 전달할 수 있습니다.
-    </p>
+<!-- 농가 선택 및 정렬 -->
+<div class="farm-selector-box">
+<div class="farm-selector-row">
+<label for="farmSelect">조사 농가 선택:</label>
+<select id="farmSelect" style="flex:2; min-width:130px;" onchange="changeFarm()"></select>
 
-    <!-- 1단계: 백업 다운로드 -->
-    <div class="section-box">
-      <h3>📥 1단계: 백업 파일(.json) 저장하기</h3>
-      <textarea id="dataArea" placeholder="앱에서 전달된 데이터가 여기에 표시됩니다..."></textarea>
-      <button class="action-btn" onclick="downloadJsonFile()">💾 백업 파일 다운로드</button>
-    </div>
+<label for="sortSelect">정렬:</label>
+<select id="sortSelect" style="flex:1; min-width:90px;" onchange="sortFarms()">
+<option value="custom">사용자 지정순</option>
+<option value="abc">ㄱㄴㄷ순</option>
+<option value="recent">최근 수정순</option>
+</select>
 
-    <!-- 2단계: 복원하기 -->
-    <div class="section-box" style="margin-bottom: 12px;">
-      <h3>📤 2단계: 백업 파일 불러와서 복원하기</h3>
-      <input type="file" id="jsonFileInput" class="file-input" accept=".json" onchange="loadJsonFile(event)">
-      <button class="action-btn btn-restore" onclick="copyForRestore()">📋 복원용 텍스트 복사하기</button>
-    </div>
+<button class="btn-edit-farm" onclick="openFarmModal()">수정</button>
+<button class="btn-add-farm" onclick="addNewFarm()">+ 새 농가</button>
+</div>
+<div class="farm-info-summary" id="farmInfoSummary">
+농가 정보가 등록되지 않았습니다.
+</div>
+</div>
 
-    <div class="guide">
-      <strong>💡 이용 안내</strong><br>
-      • <b>파일 다운로드:</b> 상자 안의 내용을 확인 후 버튼을 누르면 크롬 브라우저를 통해 `.json` 파일로 즉시 저장됩니다.<br>
-      • <b>데이터 복원:</b> 저장해 둔 파일을 불러온 뒤 <b>[복원용 텍스트 복사하기]</b>를 눌러 앱의 백업 창에 붙여넣으세요.
-    </div>
+<!-- 연도/월 필터 -->
+<div class="farm-selector-box" style="background:#fff3e0; border-color:#ff9800;">
+<div class="farm-selector-row">
+<label>조회 기간:</label>
+<select id="filterYear" onchange="onYearChange()" style="flex:1;">
+<option value="all">전체 연도</option>
+</select>
+<select id="filterMonth" onchange="renderTable()" style="flex:1;">
+<option value="all">전체 월</option>
+</select>
+</div>
+</div>
 
-    <!-- 저작권 및 이메일 표기 -->
-    <div class="copyright">
-      © 2026 슬기로운업무노트(농가경제). All rights reserved.<br>
-      Contact: windowho@korea.kr
-    </div>
-  </div>
+<!-- 누적 요약 -->
+<div class="summary-box">
+<strong>[<span id="currentFarmTitle">농가01</span>] 현황 요약</strong>
+<div class="summary-grid">
+<div>농작물 수입: <span id="cropIncomeSum">0</span>원</div>
+<div>수입표 합계: <span id="etcIncomeSum">0</span>원</div>
+<div>지출표 합계: <span id="expenseSum">0</span>원</div>
+<div>총 작업시간: <span id="workTimeSum">0</span>시간</div>
+</div>
+</div>
 
-  <script>
-    // 페이지 로드 시 클립보드 또는 전달된 데이터 자동 입력 시도
-    window.onload = function() {
-      if (navigator.clipboard && navigator.clipboard.readText) {
-        navigator.clipboard.readText().then(text => {
-          if (text && (text.includes("슬기로운업무노트") || text.includes("details"))) {
-            document.getElementById('dataArea').value = text;
-          }
-        }).catch(err => {});
-      }
-    };
+<!-- 상단 메인 탭 -->
+<div class="main-tabs">
+<button class="tab-btn active" id="btn-crop" onclick="switchTab('crop')">작물/파종</button>
+<button class="tab-btn" id="btn-cropInc" onclick="switchTab('cropInc')">농작물수입</button>
+<button class="tab-btn" id="btn-etcInc" onclick="switchTab('etcInc')">수입표</button>
+<button class="tab-btn" id="btn-expense" onclick="switchTab('expense')">지출표</button>
+<button class="tab-btn" id="btn-work" onclick="switchTab('work')">작업시간</button>
+<button class="tab-btn" id="btn-tax" onclick="switchTab('tax')">조세</button>
+</div>
+</div>
 
-    function downloadJsonFile() {
-      const text = document.getElementById('dataArea').value.trim();
-      if (!text) {
-        alert("저장할 데이터가 없습니다. 앱에서 다시 백업 버튼을 눌러주세요.");
-        return;
-      }
+<!-- 1. 작물 수확 및 파종 -->
+<div id="tab-crop" class="card tab-content active">
+<h3>작물 수확 및 파종 기록</h3>
+<div class="form-group"><label>일자</label><input type="date" id="crop-date"></div>
+<div class="form-group">
+<label>구분 선택</label>
+<div class="radio-btn-group">
+<div class="radio-btn active" id="r-planting" onclick="setCropType('파종/정식')">파종/정식</div>
+<div class="radio-btn" id="r-harvest" onclick="setCropType('수확')">수확</div>
+</div>
+<input type="hidden" id="crop-type" value="파종/정식">
+</div>
+<div class="form-group"><label>지번(별칭)</label><input type="text" id="crop-alias" placeholder="예: 101번지, 집 앞 밭"></div>
+<div class="form-group"><label>작물명</label><input type="text" id="crop-name" placeholder="예: 벼, 마늘, 고구마"></div>
+<div class="form-group"><label>면적(㎡ 또는 평)</label><input type="text" id="crop-area" placeholder="예: 660㎡ (200평)"></div>
+<div class="form-group" id="crop-qty-group" style="display:none;"><label>수량/수확량</label><input type="text" id="crop-qty" placeholder="예: 40kg 5포"></div>
+<div class="btn-group">
+<button class="btn btn-save" onclick="saveRecord('crop')">작물 기록 저장</button>
+<button class="btn btn-measure" onclick="openMeasureModal()">📏 카메라 거리측정</button>
+<button class="btn btn-canvas" onclick="openCanvasModal()">손글씨 메모</button>
+</div>
+</div>
+
+<!-- 2. 농작물 수입 -->
+<div id="tab-cropInc" class="card tab-content">
+<h3>농작물 수입 상세 입력</h3>
+<div class="form-group"><label>일자</label><input type="date" id="cropInc-date"></div>
+<div class="form-group"><label>품목명</label><input type="text" id="cropInc-item" placeholder="예: 쌀, 양파"></div>
+<div class="form-group"><label>판매수량</label><input type="text" id="cropInc-qty" placeholder="예: 40kg 10포"></div>
+<div class="form-group"><label>판매금액(원)</label><input type="number" id="cropInc-amount" placeholder="0"></div>
+<div class="form-group"><label>판매수수료(원)</label><input type="number" id="cropInc-fee" placeholder="0"></div>
+<hr style="margin: 12px 0; border:0; border-top:1px dashed #ccc;">
+<h4 style="font-size:0.9rem; color:var(--primary-dark); margin-bottom:8px;">현물 및 기타 수량 입력</h4>
+<div class="form-group"><label>현물 거래량(kg)</label><input type="number" id="cropInc-spotKg" placeholder="0"></div>
+<div class="form-group"><label>현물 거래항목</label><input type="text" id="cropInc-spotItem" placeholder="예: 임차료, 현물 구매 등"></div>
+<div class="form-group"><label>자가소비량</label><input type="text" id="cropInc-self" placeholder="예: 20kg 2포"></div>
+<div class="form-group"><label>증여량</label><input type="text" id="cropInc-gift" placeholder="예: 10kg 1포"></div>
+<div class="form-group"><label>기타량</label><input type="text" id="cropInc-other" placeholder="예: 폐기, 식부 등"></div>
+<div class="btn-group">
+<button class="btn btn-save" onclick="saveIncomeRecord()">농작물 수입 저장</button>
+<button class="btn btn-canvas" onclick="openCanvasModal()">손글씨 메모</button>
+</div>
+</div>
+
+<!-- 3. 수입표 -->
+<div id="tab-etcInc" class="card tab-content">
+<h3>수입표 입력 (연금 및 보조금 등)</h3>
+<div class="form-group"><label>일자</label><input type="date" id="etcInc-date"></div>
+<div class="form-group">
+<label>수입 구분</label>
+<select id="etcInc-category">
+<option value="농민연금">농민연금</option>
+<option value="기초연금">기초연금</option>
+<option value="국민연금">국민연금</option>
+<option value="농업보조금">농업보조금</option>
+<option value="기타 비농업수입">기타 비농업수입</option>
+</select>
+</div>
+<div class="form-group"><label>내역/출처</label><input type="text" id="etcInc-item" placeholder="예: 지자체 농민수당"></div>
+<div class="form-group"><label>금액(원)</label><input type="number" id="etcInc-amount" placeholder="0"></div>
+<div class="btn-group">
+<button class="btn btn-save" onclick="saveEtcIncomeRecord()">수입표 저장</button>
+<button class="btn btn-canvas" onclick="openCanvasModal()">손글씨 메모</button>
+</div>
+</div>
+
+<!-- 4. 지출표 -->
+<div id="tab-expense" class="card tab-content">
+<h3>지출표 기록</h3>
+<div class="form-group"><label>일자</label><input type="date" id="exp-date"></div>
+<div class="form-group">
+<label>지출 항목</label>
+<select id="exp-category">
+<option value="종자/묘목비">종자/묘목비</option>
+<option value="비료/농약비">비료/농약비</option>
+<option value="영농자재비">영농자재비</option>
+<option value="농기계 임차/수리비">농기계 임차/수리비</option>
+<option value="인건비">인건비</option>
+<option value="기타 영농지출">기타 영농지출</option>
+</select>
+</div>
+<div class="form-group"><label>내역</label><input type="text" id="exp-item" placeholder="예: 복합비료 10포"></div>
+<div class="form-group"><label>금액(원)</label><input type="number" id="exp-amount" placeholder="0"></div>
+<div class="btn-group">
+<button class="btn btn-save" onclick="saveRecord('expense')">지출표 저장</button>
+<button class="btn btn-canvas" onclick="openCanvasModal()">손글씨 메모</button>
+</div>
+</div>
+
+<!-- 5. 작업 시간 -->
+<div id="tab-work" class="card tab-content">
+<h3>작업 시간 기록</h3>
+<div class="form-group"><label>일자</label><input type="date" id="work-date"></div>
+<div class="form-group"><label>작업 내용</label><input type="text" id="work-item" placeholder="예: 경운 작업, 로터리, 예초작업"></div>
+<div class="form-group"><label>작업 인원(명)</label><input type="number" id="work-persons" value="1"></div>
+<div class="form-group"><label>작업 시간(시간)</label><input type="number" id="work-hours" placeholder="0"></div>
+<div class="btn-group">
+<button class="btn btn-save" onclick="saveRecord('work')">작업시간 저장</button>
+<button class="btn btn-canvas" onclick="openCanvasModal()">손글씨 메모</button>
+</div>
+</div>
+
+<!-- 6. 조세 -->
+<div id="tab-tax" class="card tab-content">
+<h3>조세 기록</h3>
+<div class="form-group"><label>일자</label><input type="date" id="tax-date"></div>
+<div class="form-group">
+<label>항목 선택</label>
+<div class="radio-btn-group">
+<div class="radio-btn active" id="t-tax1" onclick="setTaxCategory('농지세/지방세')">농지세/지방세</div>
+<div class="radio-btn" id="t-tax2" onclick="setTaxCategory('농용수도/전기요금')">농용수도/전기요금</div>
+<div class="radio-btn" id="t-tax3" onclick="setTaxCategory('기타 공과금')">기타 공과금</div>
+</div>
+<input type="hidden" id="tax-category" value="농지세/지방세">
+</div>
+<div class="form-group"><label>내역</label><input type="text" id="tax-item" placeholder="예: 재산세 납부"></div>
+<div class="form-group"><label>금액(원)</label><input type="number" id="tax-amount" placeholder="0"></div>
+<div class="btn-group">
+<button class="btn btn-save" onclick="saveRecord('tax')">조세 저장</button>
+<button class="btn btn-canvas" onclick="openCanvasModal()">손글씨 메모</button>
+</div>
+</div>
+
+<!-- 데이터 테이블 및 하단 버튼 -->
+<div class="card">
+<div id="captureTargetArea" style="background: #ffffff; padding: 8px; border-radius: 6px;">
+<h3>[<span id="printFarmTitle">농가01</span>] 현장 기록표 (클릭 시 수정)</h3>
+<div id="printFarmInfo" style="font-size:0.8rem; margin-bottom:8px; color:#555;"></div>
+<div class="table-responsive">
+<table id="dataTable">
+<thead>
+<tr>
+<th>일자</th>
+<th>분류</th>
+<th>항목/내용</th>
+<th>수량/시간/금액</th>
+<th>삭제</th>
+</tr>
+</thead>
+<tbody id="dataBody"></tbody>
+</table>
+</div>
+</div>
+
+<div class="btn-group" style="margin-top:12px;">
+<button class="btn btn-print" onclick="captureAndShowReportImage()">📷 보고서 이미지 생성</button>
+<button class="btn btn-backup" onclick="openBackupModal()">💾 데이터 백업 및 복원</button>
+</div>
+</div>
+
+<!-- 모달 창들 -->
+<div class="modal-overlay" id="reportImageModal">
+<div class="modal-content" style="text-align:center;">
+<h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
+아래 버튼으로 저장하거나, 이미지를 별도 화면에서 열어 저장할 수 있습니다.
+</p>
+<div id="reportImagePreview" style="border:1px solid #ccc; border-radius:4px; margin-bottom:12px; background:#f9f9f9;">
+<img id="generatedReportImg" alt="보고서 이미지" oncontextmenu="return true;">
+</div>
+<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadReportImageDirectly()">💾 이미지 저장 / 공유</button>
+<button class="btn" style="width:100%; margin-bottom:8px; background:#455a64; color:white;" onclick="openReportImageInNewPage()">🖼️ 이미지 새 화면으로 열기</button>
+<button class="btn btn-backup" style="width:100%; margin-bottom:8px;" onclick="copyReportImageAndOpenChrome()">🌐 크롬에서 이미지 저장하기</button>
+<div class="btn-group">
+<button class="btn btn-danger" onclick="closeReportImageModal()">닫기</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="backupModal">
+<div class="modal-content">
+<h3 style="margin-bottom:10px; color:#7b1fa2;">💾 데이터 백업 및 복원</h3>
+<p style="font-size:0.82rem; color:#555; line-height:1.4; margin-bottom:12px;">
+크롬 브라우저로 연결 시 백업 데이터가 자동으로 클립보드에 복사됩니다.
+</p>
+
+<div style="background:#f3e5f5; padding:10px; border-radius:6px; margin-bottom:12px;">
+<strong style="font-size:0.9rem; color:#4a148c;">1단계: 크롬 백업 사이트 연동 (데이터 자동 복사)</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">버튼을 누르면 데이터가 자동 복사되며 크롬 창이 열립니다.</p>
+<button class="btn btn-backup" style="width:100%;" onclick="copyAndOpenExternalBackupSite()">🌐 크롬 브라우저로 백업 열기</button>
+</div>
+
+<div style="background:#e8eaf6; padding:10px; border-radius:6px; margin-bottom:12px;">
+<strong style="font-size:0.9rem; color:#1a237e;">2단계: 앱 내 백업 파일 복원하기</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">저장해 둔 백업 파일(.json)을 선택하면 곧바로 복원됩니다.</p>
+<input type="file" id="appRestoreFileInput" accept=".json" onchange="restoreAppFromJsonFile(event)" style="font-size:0.85rem; background:#fff; padding:6px; width:100%; border:1px solid #cbd5e1; border-radius:4px;">
+</div>
+
+<div class="btn-group">
+<button class="btn btn-danger" onclick="closeBackupModal()">닫기</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="farmModal">
+<div class="modal-content">
+<h3 style="margin-bottom:12px; color:var(--primary-dark);">농가 상세 정보 등록/수정</h3>
+<div class="form-group"><label>농가 구분명</label><input type="text" id="m-farm-alias" placeholder="예: 담양 벼재배 농가"></div>
+<div class="form-group"><label>농가주 성명</label><input type="text" id="m-owner-name" placeholder="예: 홍길동"></div>
+<div class="form-group"><label>가족 수 (명)</label><input type="number" id="m-family-count" placeholder="예: 4"></div>
+<div class="form-group"><label>전화번호</label><input type="text" id="m-phone" placeholder="예: 010-1234-5678"></div>
+<div class="form-group"><label>농가 주소</label><input type="text" id="m-address" placeholder="예: 전남 담양군 ..."></div>
+<div class="btn-group">
+<button class="btn btn-save" onclick="saveFarmModal()">저장하기</button>
+<button class="btn btn-danger" onclick="closeFarmModal()">취소</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="canvasModal">
+<div class="modal-content">
+<h3 style="margin-bottom:8px; color:var(--primary-dark);">손글씨 필기 메모장</h3>
+<canvas id="drawingCanvas"></canvas>
+<div class="form-group" style="margin-top: 8px;">
+<label>메모 제목/설명</label>
+<input type="text" id="canvasNoteTitle" placeholder="예: 현장 특이사항 필기">
+</div>
+<div class="btn-group">
+<button class="btn btn-danger" onclick="clearCanvas()">지우기</button>
+<button class="btn btn-save" onclick="saveCanvasNote()">메모로 저장</button>
+<button class="btn" style="background:#757575; color:white;" onclick="closeCanvasModal()">닫기</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="measureModal">
+<div class="measure-modal-content">
+<h3 style="margin-bottom:8px; color:#00ffcc; text-align:center; font-size:1rem;">AR 카메라 거리 측정기</h3>
+<div class="viewfinder" id="measureViewfinder">
+<video id="measureCameraStream" autoplay playsinline muted></video>
+<div class="crosshair-h"></div>
+<div class="crosshair-v"></div>
+<div class="crosshair-center"></div>
+</div>
+<div class="form-group" style="margin-bottom: 8px;">
+<label style="color:#aaa; font-size:0.8rem;">휴대폰 높이 (cm)</label>
+<input type="number" id="measurePhoneHeight" value="120" oninput="calculateMeasureDistance()" style="background:#2b2b2b; border:1px solid #444; color:#fff; text-align:center;">
+</div>
+<div style="background:#2b2b2b; padding:10px; border-radius:6px; text-align:center; margin-bottom:10px;">
+<div style="font-size:0.75rem; color:#aaa;">측정된 거리</div>
+<div id="measureDistanceResult" style="font-size:20px; font-weight:bold; color:#00ffcc; margin-top:2px;">0.0 cm</div>
+</div>
+<div id="measureSensorStatus" style="font-size:0.75rem; color:#888; text-align:center; margin-bottom:10px;">센서 대기 중...</div>
+<div class="btn-group">
+<button class="btn" style="background:#00897b; color:white;" onclick="captureAndSaveMeasureResult()">📸 사진 찍고 앨범/기록표 저장</button>
+<button class="btn btn-danger" onclick="closeMeasureModal()">닫기</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="photoViewModal">
+<div class="modal-content" style="text-align:center;">
+<h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 측정 사진 크게 보기</h3>
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">사진을 꾹 눌러 저장하거나 아래 버튼을 누르세요.</p>
+<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; background:#000;">
+<img id="modalFullPhotoImg" style="width:100%; height:auto; display:block;" alt="측정사진">
+</div>
+<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadModalPhotoDirectly()">💾 사진 파일로 직접 다운로드</button>
+<div class="btn-group">
+<button class="btn btn-danger" onclick="closePhotoViewModal()">닫기</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="manualModal">
+<div class="modal-content">
+<h3 style="margin-bottom:12px; color:var(--primary-dark);">📖 슬기로운업무노트 사용설명서</h3>
+<div style="font-size:0.85rem; line-height:1.5; color:#444; max-height:60vh; overflow-y:auto; text-align:left; padding-right:5px;">
+<p><strong>1. 농가 관리 및 조회 기간</strong></p>
+<ul style="margin-left:20px; margin-bottom:10px;">
+<li>상단에서 조사할 농가를 선택하거나 <strong>[+ 새 농가]</strong>를 등록하세요.</li>
+<li>조회 기간은 기본적으로 <strong>당월(이번 달)</strong>이 우선 표시되며, 연도/월 필터를 변경하여 조회할 수 있습니다.</li>
+</ul>
+<p><strong>2. 주요 입력 기능</strong></p>
+<ul style="margin-left:20px; margin-bottom:10px;">
+<li><strong>작물/파종, 농작물수입, 수입표, 지출표, 작업시간, 조세:</strong> 영농 활동 및 수지 내역을 체계적으로 입력합니다.</li>
+</ul>
+<p><strong>3. 특화 부가 기능</strong></p>
+<ul style="margin-left:20px; margin-bottom:10px;">
+<li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 길게 눌러 저장할 수 있습니다.</li>
+<li><strong>📷 보고서 이미지 생성:</strong> 현장 기록표를 이미지로 변환한 뒤 [크롬에서 이미지 저장하기]를 눌러 PNG 파일로 저장할 수 있습니다.</li>
+<li><strong>💾 데이터 백업 및 복원:</strong> 크롬 브라우저 창으로 데이터가 자동 복사되며 연동됩니다.</li>
+</ul>
+</div>
+<div class="btn-group" style="margin-top:15px;">
+<button class="btn btn-save" onclick="closeManualModal()">확인 완료</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="editModal">
+<div class="modal-content">
+<h3 style="margin-bottom:12px; color:var(--primary-dark);" id="editModalTitle">기록 수정하기</h3>
+<div id="imageViewerArea" style="display:none; text-align:center; margin-bottom:12px;">
+<img id="viewFullImage" style="max-width:100%; max-height:220px; border:2px solid var(--primary); border-radius:4px; cursor:pointer;" onclick="openPhotoFromViewer()" alt="큰사진">
+<button class="btn btn-print" style="width:100%; margin-top:8px;" onclick="downloadViewerPhotoDirectly()">💾 이 사진 파일로 다운로드</button>
+</div>
+<div id="editFormArea">
+<div class="form-group"><label>일자</label><input type="date" id="edit-date"></div>
+<div class="form-group"><label>항목/내용</label><input type="text" id="edit-item"></div>
+<div class="form-group"><label>수량/시간/금액 표시</label><input type="text" id="edit-valStr"></div>
+<div class="form-group"><label>수치값(원 또는 시간)</label><input type="number" id="edit-val"></div>
+</div>
+<div class="btn-group">
+<button class="btn btn-save" id="btnSaveEdit" onclick="saveEditedRecord()">수정 저장</button>
+<button class="btn btn-danger" onclick="closeEditModal()">닫기</button>
+</div>
+</div>
+</div>
+
+<footer>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.51</span></p>
+<p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
+</footer>
+
+<script>
+const APP_VERSION = "v1.0.51";
+const BACKUP_SITE_URL = "https://window-ho.github.io/verygoodhistory/backup.html";
+document.getElementById('footerVersion').innerText = APP_VERSION;
+
+let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
+let allFarmData = JSON.parse(localStorage.getItem('farm_app_all_data_v1031')) || {};
+let currentFarmId = localStorage.getItem('farm_app_current_v1031') || 'farm_01';
+let editingIndex = -1;
+
+if (Object.keys(farmDetails).length === 0) {
+farmDetails['farm_01'] = { alias: '농가01', owner: '', family: '', phone: '', address: '', updatedAt: Date.now() };
+allFarmData['farm_01'] = [];
+}
+
+function toggleMenu() {
+const menu = document.getElementById('topDropdownMenu');
+menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+
+window.onclick = function(event) {
+if (!event.target.matches('.menu-btn') && !event.target.closest('.menu-btn')) {
+const menu = document.getElementById('topDropdownMenu');
+if (menu && menu.style.display === 'block') {
+menu.style.display = 'none';
+}
+}
+}
+
+function setCropType(val) {
+document.getElementById('crop-type').value = val;
+document.getElementById('r-planting').classList.toggle('active', val === '파종/정식');
+document.getElementById('r-harvest').classList.toggle('active', val === '수확');
+document.getElementById('crop-qty-group').style.display = (val === '수확') ? 'block' : 'none';
+}
+
+function setTaxCategory(val) {
+document.getElementById('tax-category').value = val;
+['t-tax1', 't-tax2', 't-tax3'].forEach((id, idx) => {
+let catVals = ['농지세/지방세', '농용수도/전기요금', '기타 공과금'];
+document.getElementById(id).classList.toggle('active', catVals[idx] === val);
+});
+}
+
+function initFarmSelect() {
+const select = document.getElementById('farmSelect');
+const sortType = document.getElementById('sortSelect').value;
+select.innerHTML = '';
+
+let farmKeys = Object.keys(farmDetails);
+
+if (sortType === 'abc') {
+farmKeys.sort((a, b) => {
+let nameA = farmDetails[a].owner || farmDetails[a].alias;
+let nameB = farmDetails[b].owner || farmDetails[b].alias;
+return nameA.localeCompare(nameB, 'ko');
+});
+} else if (sortType === 'recent') {
+farmKeys.sort((a, b) => (farmDetails[b].updatedAt || 0) - (farmDetails[a].updatedAt || 0));
+}
+
+farmKeys.forEach(id => {
+let info = farmDetails[id];
+let opt = document.createElement('option');
+opt.value = id;
+let displayName = info.owner ? `${info.alias} (${info.owner})` : info.alias;
+opt.innerText = displayName;
+if (id === currentFarmId) opt.selected = true;
+select.appendChild(opt);
+});
+
+if (!farmDetails[currentFarmId]) currentFarmId = farmKeys[0];
+updateFarmTitle();
+updateYearFilterOptions(true);
+}
+
+function updateYearFilterOptions(isFirstInit = false) {
+const yearSelect = document.getElementById('filterYear');
+let currentVal = yearSelect.value;
+let years = new Set();
+let farmData = allFarmData[currentFarmId] || [];
+
+farmData.forEach(item => {
+if (item.date && item.date.length >= 4) {
+years.add(item.date.slice(0, 4));
+}
+});
+
+let now = new Date();
+let currentYearStr = String(now.getFullYear());
+years.add(currentYearStr);
+
+yearSelect.innerHTML = '<option value="all">전체 연도</option>';
+Array.from(years).sort().reverse().forEach(y => {
+let opt = document.createElement('option');
+opt.value = y;
+opt.innerText = y + '년';
+yearSelect.appendChild(opt);
+});
+
+if (isFirstInit) {
+yearSelect.value = currentYearStr;
+} else if (currentVal !== 'all' && !years.has(currentVal)) {
+yearSelect.value = 'all';
+} else {
+yearSelect.value = currentVal;
+}
+updateMonthFilterOptions(isFirstInit);
+}
+
+function onYearChange() {
+updateMonthFilterOptions(false);
+renderTable();
+}
+
+function updateMonthFilterOptions(isFirstInit = false) {
+const yearSelect = document.getElementById('filterYear');
+const monthSelect = document.getElementById('filterMonth');
+let selectedYear = yearSelect.value;
+let currentMonthVal = monthSelect.value;
+let months = new Set();
+let farmData = allFarmData[currentFarmId] || [];
+
+farmData.forEach(item => {
+if (item.date && item.date.length >= 7) {
+let y = item.date.slice(0, 4);
+let m = item.date.slice(5, 7);
+if (selectedYear === 'all' || y === selectedYear) {
+months.add(m);
+}
+}
+});
+
+let now = new Date();
+let currentMonthStr = String(now.getMonth() + 1).padStart(2, '0');
+months.add(currentMonthStr);
+
+monthSelect.innerHTML = '<option value="all">전체 월</option>';
+Array.from(months).sort().forEach(m => {
+let opt = document.createElement('option');
+opt.value = m;
+opt.innerText = Number(m) + '월';
+monthSelect.appendChild(opt);
+});
+
+if (isFirstInit) {
+monthSelect.value = currentMonthStr;
+} else if (currentMonthVal !== 'all' && months.has(currentMonthVal)) {
+monthSelect.value = currentMonthVal;
+} else {
+monthSelect.value = 'all';
+}
+}
+
+function updateFarmTitle() {
+const info = farmDetails[currentFarmId] || { alias: '선택농가', owner: '', family: '', phone: '', address: '' };
+const title = info.alias;
+document.getElementById('currentFarmTitle').innerText = title;
+document.getElementById('printFarmTitle').innerText = title;
+
+let summaryText = `성명: ${info.owner || '미기입'} | 가족수: ${info.family ? info.family + '명' : '미기입'} | 연락처: ${info.phone || '미기입'}<br>주소: ${info.address || '미기입'}`;
+document.getElementById('farmInfoSummary').innerHTML = summaryText;
+document.getElementById('printFarmInfo').innerHTML = summaryText;
+}
+
+function changeFarm() {
+currentFarmId = document.getElementById('farmSelect').value;
+localStorage.setItem('farm_app_current_v1031', currentFarmId);
+updateFarmTitle();
+updateYearFilterOptions(false);
+renderTable();
+}
+
+function sortFarms() { initFarmSelect(); }
+
+function addNewFarm() {
+let keys = Object.keys(farmDetails);
+let nextNum = keys.length + 1;
+let newId = 'farm_' + String(nextNum).padStart(2, '0');
+
+farmDetails[newId] = {
+alias: `농가${String(nextNum).padStart(2, '0')}`,
+owner: '', family: '', phone: '', address: '', updatedAt: Date.now()
+};
+allFarmData[newId] = [];
+
+autoSaveAndBackup();
+currentFarmId = newId;
+initFarmSelect();
+openFarmModal();
+}
+
+function openFarmModal() {
+const info = farmDetails[currentFarmId];
+document.getElementById('m-farm-alias').value = info.alias || '';
+document.getElementById('m-owner-name').value = info.owner || '';
+document.getElementById('m-family-count').value = info.family || '';
+document.getElementById('m-phone').value = info.phone || '';
+document.getElementById('m-address').value = info.address || '';
+document.getElementById('farmModal').style.display = 'flex';
+}
+
+function closeFarmModal() { document.getElementById('farmModal').style.display = 'none'; }
+
+function saveFarmModal() {
+const alias = document.getElementById('m-farm-alias').value.trim() || `농가${currentFarmId.replace('farm_', '')}`;
+farmDetails[currentFarmId] = {
+alias: alias,
+owner: document.getElementById('m-owner-name').value.trim(),
+family: document.getElementById('m-family-count').value.trim(),
+phone: document.getElementById('m-phone').value.trim(),
+address: document.getElementById('m-address').value.trim(),
+updatedAt: Date.now()
+};
+autoSaveAndBackup();
+closeFarmModal();
+initFarmSelect();
+}
+
+function openManualModal() {
+document.getElementById('manualModal').style.display = 'flex';
+}
+function closeManualModal() {
+document.getElementById('manualModal').style.display = 'none';
+}
+
+function openBackupModal() {
+document.getElementById('appRestoreFileInput').value = '';
+document.getElementById('backupModal').style.display = 'flex';
+}
+function closeBackupModal() {
+document.getElementById('backupModal').style.display = 'none';
+}
+
+/* 데이터 자동 복사 후 크롬 외부 브라우저 창으로 안전 연동 */
+function copyAndOpenExternalBackupSite() {
+const backupObj = {
+app: "슬기로운업무노트(농가경제)",
+version: APP_VERSION,
+exportedAt: new Date().toISOString(),
+details: farmDetails,
+data: allFarmData
+};
+const jsonString = JSON.stringify(backupObj);
+
+if (navigator.clipboard && navigator.clipboard.writeText) {
+navigator.clipboard.writeText(jsonString).then(() => {
+alert("전체 백업 데이터가 클립보드에 자동 복사되었습니다!\n크롬 브라우저가 열리면 붙여넣기(Ctrl+V 등)하여 파일을 만드세요.");
+openChromeBrowserExternal();
+}).catch(() => {
+fallbackExternalCopy(jsonString);
+});
+} else {
+fallbackExternalCopy(jsonString);
+}
+}
+
+function fallbackExternalCopy(text) {
+const tempInput = document.createElement("textarea");
+tempInput.value = text;
+document.body.appendChild(tempInput);
+tempInput.select();
+document.execCommand("copy");
+document.body.removeChild(tempInput);
+alert("전체 백업 데이터가 클립보드에 자동 복사되었습니다!\n크롬 브라우저가 열리면 붙여넣기하여 파일을 만드세요.");
+openChromeBrowserExternal();
+}
+
+function openChromeBrowserExternal() {
+if (/android/i.test(navigator.userAgent)) {
+const intentUrl = `intent://window-ho.github.io/verygoodhistory/backup.html#Intent;scheme=https;package=com.android.chrome;end;`;
+window.location.href = intentUrl;
+} else {
+window.open(BACKUP_SITE_URL, '_system');
+}
+}
+
+/* 앱 내에서 JSON 파일 바로 읽어서 복원하기 */
+function restoreAppFromJsonFile(event) {
+const file = event.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = function(e) {
+try {
+const parsed = JSON.parse(e.target.result);
+if (parsed.details && parsed.data) {
+if (confirm("이 백업 파일로 데이터를 덮어쓰고 복원하시겠습니까?")) {
+farmDetails = parsed.details;
+allFarmData = parsed.data;
+autoSaveAndBackup();
+initFarmSelect();
+renderTable();
+closeBackupModal();
+alert("데이터가 성공적으로 복원되었습니다!");
+}
+} else {
+alert("올바른 백업 파일 형식이 아닙니다.");
+}
+} catch (err) {
+alert("JSON 파일을 읽는 중 오류가 발생했습니다.");
+}
+};
+reader.readAsText(file);
+}
+
+const canvas = document.getElementById('drawingCanvas');
+const ctx = canvas.getContext('2d');
+let isDrawing = false;
+
+function resizeCanvas() {
+const parent = canvas.parentElement;
+canvas.width = parent.clientWidth;
+canvas.height = 220;
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.lineWidth = 3;
+ctx.lineCap = 'round';
+ctx.strokeStyle = '#000000';
+}
+
+function openCanvasModal() {
+document.getElementById('canvasModal').style.display = 'flex';
+setTimeout(resizeCanvas, 100);
+}
+
+function closeCanvasModal() { document.getElementById('canvasModal').style.display = 'none'; }
+function clearCanvas() { ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+
+function getPos(e) {
+const rect = canvas.getBoundingClientRect();
+let clientX = e.clientX, clientY = e.clientY;
+if (e.touches && e.touches.length > 0) {
+clientX = e.touches[0].clientX;
+clientY = e.touches[0].clientY;
+}
+return { x: clientX - rect.left, y: clientY - rect.top };
+}
+
+canvas.addEventListener('mousedown', (e) => { isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); });
+canvas.addEventListener('mousemove', (e) => { if (!isDrawing) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); });
+canvas.addEventListener('mouseup', () => { isDrawing = false; });
+canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+canvas.addEventListener('touchstart', (e) => { isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); e.preventDefault(); });
+canvas.addEventListener('touchmove', (e) => { if (!isDrawing) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); e.preventDefault(); });
+canvas.addEventListener('touchend', () => { isDrawing = false; });
+
+function saveCanvasNote() {
+const noteTitle = document.getElementById('canvasNoteTitle').value.trim() || '손글씨 메모';
+const dataURL = canvas.toDataURL('image/png');
+
+allFarmData[currentFarmId].push({
+type: 'note',
+date: new Date().toISOString().slice(0,10),
+category: '손글씨메모',
+item: noteTitle,
+val: 0,
+valStr: `<img src="${dataURL}" style="max-width:120px; max-height:50px; border:1px solid #ccc; vertical-align:middle; cursor:pointer;" alt="손글씨">`,
+imgData: dataURL
+});
+
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+document.getElementById('canvasNoteTitle').value = '';
+closeCanvasModal();
+alert('손글씨 메모가 저장되었습니다.');
+}
+
+const measureVideo = document.getElementById('measureCameraStream');
+const measurePhoneHeightInput = document.getElementById('measurePhoneHeight');
+const measureDistanceResult = document.getElementById('measureDistanceResult');
+const measureSensorStatus = document.getElementById('measureSensorStatus');
+let currentTilt = 0;
+let lastCalculatedDistance = 0;
+
+async function initMeasureCamera() {
+try {
+const constraints = {
+video: { facingMode: { exact: "environment" } },
+audio: false
+};
+let stream;
+try {
+stream = await navigator.mediaDevices.getUserMedia(constraints);
+} catch (e) {
+stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+}
+measureVideo.srcObject = stream;
+await measureVideo.play();
+measureSensorStatus.innerText = "카메라 연결 완료 (센서 대기 중)";
+} catch (err) {
+console.error(err);
+measureSensorStatus.innerText = "오류: 카메라 권한이 거부되었거나 지원하지 않습니다.";
+}
+}
+
+if (window.DeviceOrientationEvent) {
+window.addEventListener('deviceorientation', (event) => {
+let tilt = event.beta;
+if (tilt !== null) {
+currentTilt = tilt;
+calculateMeasureDistance();
+measureSensorStatus.innerText = `현재 기울기 각도: ${tilt.toFixed(1)}°`;
+}
+});
+} else {
+measureSensorStatus.innerText = "이 기기는 기울기 센서를 지원하지 않습니다.";
+}
+
+function calculateMeasureDistance() {
+const heightCm = parseFloat(measurePhoneHeightInput.value) || 0;
+let angleRad = (currentTilt * Math.PI) / 180;
+
+if (angleRad > 0 && angleRad < Math.PI / 2) {
+let distance = heightCm * Math.tan(angleRad);
+if (distance > 0 && distance < 10000) {
+lastCalculatedDistance = distance;
+measureDistanceResult.innerText = `${distance.toFixed(1)} cm`;
+} else {
+measureDistanceResult.innerText = "측정 범위 이탈";
+}
+} else {
+measureDistanceResult.innerText = "바닥을 향해 폰을 기울여주세요";
+}
+}
+
+function openMeasureModal() {
+document.getElementById('measureModal').style.display = 'flex';
+initMeasureCamera();
+}
+
+function closeMeasureModal() {
+document.getElementById('measureModal').style.display = 'none';
+if (measureVideo.srcObject) {
+measureVideo.srcObject.getTracks().forEach(track => track.stop());
+measureVideo.srcObject = null;
+}
+}
+
+function captureAndSaveMeasureResult() {
+if (lastCalculatedDistance <= 0) {
+alert('유효한 측정 거리가 없습니다. 바닥을 향해 폰을 기울여주세요.');
+return;
+}
+
+const canvasCapture = document.createElement('canvas');
+const w = measureVideo.videoWidth || 640;
+const h = measureVideo.videoHeight || 480;
+canvasCapture.width = w;
+canvasCapture.height = h;
+const ctxCapture = canvasCapture.getContext('2d');
+
+try {
+ctxCapture.drawImage(measureVideo, 0, 0, w, h);
+
+const cx = w / 2;
+const cy = h / 2;
+ctxCapture.strokeStyle = "#00ffcc";
+ctxCapture.lineWidth = Math.max(2, w / 220);
+ctxCapture.beginPath();
+ctxCapture.moveTo(0, cy);
+ctxCapture.lineTo(w, cy);
+ctxCapture.moveTo(cx, 0);
+ctxCapture.lineTo(cx, h);
+ctxCapture.stroke();
+
+ctxCapture.beginPath();
+ctxCapture.arc(cx, cy, 24, 0, 2 * Math.PI);
+ctxCapture.stroke();
+
+const distText = `측정 거리: ${lastCalculatedDistance.toFixed(1)} cm (${new Date().toISOString().slice(0,10)})`;
+const fontSize = Math.max(18, Math.floor(w / 24));
+ctxCapture.font = `bold ${fontSize}px sans-serif`;
+ctxCapture.fillStyle = "rgba(0, 0, 0, 0.65)";
+ctxCapture.fillRect(0, h - fontSize * 2, w, fontSize * 2);
+ctxCapture.fillStyle = "#00ffcc";
+ctxCapture.textAlign = "center";
+ctxCapture.fillText(distText, cx, h - fontSize * 0.6);
+
+const dataURL = canvasCapture.toDataURL('image/png');
+
+allFarmData[currentFarmId].push({
+type: 'note',
+date: new Date().toISOString().slice(0,10),
+category: '거리측정',
+item: `카메라 거리측정 (${lastCalculatedDistance.toFixed(1)}cm)`,
+val: lastCalculatedDistance,
+valStr: `${lastCalculatedDistance.toFixed(1)} cm<br><img src="${dataURL}" style="max-width:100px; max-height:60px; border:1px solid #ccc; margin-top:4px; vertical-align:middle; cursor:pointer;" alt="측정사진">`,
+imgData: dataURL
+});
+
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+closeMeasureModal();
+
+document.getElementById('modalFullPhotoImg').src = dataURL;
+document.getElementById('photoViewModal').style.display = 'flex';
+} catch (e) {
+console.error(e);
+alert('사진 캡처 중 오류가 발생했습니다.');
+}
+}
+
+function openPhotoViewModal(url) {
+if (url) {
+document.getElementById('modalFullPhotoImg').src = url;
+}
+document.getElementById('photoViewModal').style.display = 'flex';
+}
+function closePhotoViewModal() {
+document.getElementById('photoViewModal').style.display = 'none';
+}
+function openPhotoFromViewer() {
+const src = document.getElementById('viewFullImage').src;
+if (src) openPhotoViewModal(src);
+}
+
+/* 이미지 직접 다운로드 함수들 */
+async function downloadReportImageDirectly() {
+const img = document.getElementById('generatedReportImg');
+if (!img || !img.src || img.src === window.location.href) {
+alert('먼저 [보고서 이미지 생성]을 눌러 이미지를 만들어 주세요.');
+return;
+}
+
+try {
+  const response = await fetch(img.src);
+  const blob = await response.blob();
+  await savePngBlob(blob, `농가경제_현장기록표_${getLocalDateString()}.png`);
+} catch (err) {
+  console.error('보고서 이미지 다운로드 오류:', err);
+  // data URL을 새 창으로 열면 Android 브라우저에서 길게 눌러 저장할 수 있습니다.
+  try {
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write('<meta name="viewport" content="width=device-width,initial-scale=1"><title>보고서 이미지 저장</title><p>이미지를 길게 눌러 저장하세요.</p><img src="' + img.src + '" style="width:100%;height:auto">');
+      win.document.close();
+    } else {
+      alert('브라우저가 새 창 열기를 차단했습니다. 이미지 미리보기에서 이미지를 길게 눌러 저장해 주세요.');
+    }
+  } catch (fallbackError) {
+    alert('이미지 저장에 실패했습니다. 이미지 미리보기에서 이미지를 길게 눌러 저장해 주세요.');
+  }
+}
+}
+
+function getLocalDateString() {
+const d = new Date();
+return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+async function savePngBlob(blob, filename) {
+  if (!blob || blob.size === 0) throw new Error('생성된 이미지 데이터가 비어 있습니다.');
+
+  // Android Chrome/WebView가 지원하면 공유 메뉴에서 파일 저장 또는 앱 전송이 가능합니다.
+  try {
+    const file = new File([blob], filename, { type: 'image/png' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: '현장 기록표 이미지' });
+      return;
+    }
+  } catch (shareError) {
+    if (shareError && shareError.name === 'AbortError') return;
+    console.warn('파일 공유 기능을 사용할 수 없어 다운로드 방식으로 전환합니다.', shareError);
+  }
+
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = objectUrl;
+  link.download = filename;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  // WebView에서 다운로드 속성을 무시하면 별도 화면 열기 기능으로 저장할 수 있습니다.
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 120000);
+}
+
+function downloadModalPhotoDirectly() {
+const imgSrc = document.getElementById('modalFullPhotoImg').src;
+if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
+triggerDownload(imgSrc, `농가경제_측정사진_${new Date().toISOString().slice(0,10)}.png`);
+}
+
+function downloadViewerPhotoDirectly() {
+const imgSrc = document.getElementById('viewFullImage').src;
+if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
+triggerDownload(imgSrc, `농가경제_기록사진_${new Date().toISOString().slice(0,10)}.png`);
+}
+
+function triggerDownload(url, filename) {
+const a = document.createElement('a');
+a.href = url;
+a.download = filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+}
+
+let html2CanvasLoadPromise = null;
+
+async function ensureHtml2CanvasLoaded() {
+  if (typeof window.html2canvas === 'function') return window.html2canvas;
+  if (html2CanvasLoadPromise) return html2CanvasLoadPromise;
+
+  const cdnUrls = [
+    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
+  ];
+
+  html2CanvasLoadPromise = (async () => {
+    for (const url of cdnUrls) {
       try {
-        JSON.parse(text); // 유효성 검증
-        const blob = new Blob([text], { type: "application/json;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `농가경제_백업데이터_${new Date().toISOString().slice(0,10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        alert("백업 파일이 성공적으로 다운로드되었습니다!");
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = url;
+          script.async = true;
+          script.onload = resolve;
+          script.onerror = () => {
+            script.remove();
+            reject(new Error('라이브러리 로드 실패: ' + url));
+          };
+          document.head.appendChild(script);
+        });
+        if (typeof window.html2canvas === 'function') return window.html2canvas;
       } catch (e) {
-        alert("데이터 형식이 올바르지 않습니다.");
+        console.warn(e.message);
       }
     }
+    throw new Error('이미지 변환 라이브러리를 불러오지 못했습니다. 인터넷 연결 또는 앱의 외부 사이트 접근 권한을 확인해 주세요.');
+  })();
 
-    function loadJsonFile(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('dataArea').value = e.target.result;
-        alert("백업 파일을 정상적으로 불러왔습니다!\n[복원용 텍스트 복사하기] 버튼을 누른 후 앱에 붙여넣으세요.");
-      };
-      reader.readAsText(file);
+  try {
+    return await html2CanvasLoadPromise;
+  } finally {
+    html2CanvasLoadPromise = null;
+  }
+}
+
+async function captureAndShowReportImage() {
+  const button = document.querySelector('button[onclick="captureAndShowReportImage()"]');
+  const originalText = button ? button.innerText : '';
+  const targetElement = document.getElementById('captureTargetArea');
+
+  if (!targetElement) {
+    alert('이미지로 변환할 보고서 영역을 찾을 수 없습니다.');
+    return;
+  }
+
+  try {
+    if (button) {
+      button.disabled = true;
+      button.innerText = '이미지 생성 중...';
     }
 
-    function copyForRestore() {
-      const textarea = document.getElementById('dataArea');
-      textarea.select();
-      try {
-        document.execCommand('copy');
-        alert("복원용 텍스트가 복사되었습니다!\n앱의 [데이터 백업 및 복원] 메뉴로 돌아가 붙여넣고 복원하세요.");
-      } catch (e) {
-        alert("텍스트 상자 안의 내용을 수동으로 전체 선택 후 복사해 주세요.");
+    const capture = await ensureHtml2CanvasLoaded();
+
+    // 표의 가로 스크롤 영역이 잘리지 않도록 캡처 순간에만 전체 너비를 사용합니다.
+    const tableWrap = targetElement.querySelector('.table-responsive');
+    const oldOverflow = tableWrap ? tableWrap.style.overflow : '';
+    const oldWidth = tableWrap ? tableWrap.style.width : '';
+    if (tableWrap) {
+      tableWrap.style.overflow = 'visible';
+      tableWrap.style.width = 'max-content';
+    }
+
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    if (document.fonts && document.fonts.ready) {
+      await Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 1500))]);
+    }
+
+    const canvas = await capture(targetElement, {
+      scale: Math.min(2, Math.max(1.5, (window.devicePixelRatio || 1) * 1.25)),
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: Math.max(document.documentElement.clientWidth, targetElement.scrollWidth),
+      onclone: clonedDoc => {
+        const clonedWrap = clonedDoc.querySelector('#captureTargetArea .table-responsive');
+        if (clonedWrap) {
+          clonedWrap.style.overflow = 'visible';
+          clonedWrap.style.width = 'max-content';
+        }
       }
+    });
+
+    if (tableWrap) {
+      tableWrap.style.overflow = oldOverflow;
+      tableWrap.style.width = oldWidth;
     }
 
-    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-  </script>
+    const imageURL = canvas.toDataURL('image/png');
+    if (!imageURL || imageURL === 'data:,') throw new Error('이미지 파일을 생성하지 못했습니다.');
 
+    document.getElementById('generatedReportImg').src = imageURL;
+    openReportImageModal();
+  } catch (err) {
+    console.error('보고서 이미지 생성 오류:', err);
+    alert('보고서 이미지 생성에 실패했습니다.\n' + (err && err.message ? err.message : '브라우저에서 이미지 변환을 완료하지 못했습니다.'));
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerText = originalText || '📷 보고서 이미지 생성';
+    }
+  }
+}
+
+let reportModalScrollY = 0;
+
+function openReportImageModal() {
+  reportModalScrollY = window.scrollY || window.pageYOffset || 0;
+  document.body.style.top = `-${reportModalScrollY}px`;
+  document.body.classList.add('report-modal-open');
+  document.getElementById('reportImageModal').style.display = 'flex';
+}
+
+function closeReportImageModal() {
+  document.getElementById('reportImageModal').style.display = 'none';
+  document.body.classList.remove('report-modal-open');
+  document.body.style.top = '';
+  window.scrollTo(0, reportModalScrollY);
+}
+
+function openReportImageInNewPage() {
+  const img = document.getElementById('generatedReportImg');
+  if (!img || !img.src || img.src === window.location.href) {
+    alert('먼저 보고서 이미지를 생성해 주세요.');
+    return;
+  }
+
+  // Android WebView/Chrome에서 이미지 자체를 별도 페이지로 열어
+  // 브라우저의 이미지 저장 메뉴를 사용할 수 있게 합니다.
+  const opened = window.open(img.src, '_blank');
+  if (!opened) {
+    const link = document.createElement('a');
+    link.href = img.src;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+}
+
+/* 보고서 이미지 데이터를 클립보드로 전달한 뒤 외부 크롬 백업센터에서 저장 */
+async function copyReportImageAndOpenChrome() {
+  const img = document.getElementById('generatedReportImg');
+  if (!img || !img.src || !img.src.startsWith('data:image/png')) {
+    alert('먼저 보고서 이미지를 생성해 주세요.');
+    return;
+  }
+  const imageData = img.src;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(imageData);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = imageData;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      if (!ok) throw new Error('클립보드 복사 권한이 없습니다.');
+    }
+    alert('보고서 이미지가 복사되었습니다. 크롬 이미지 저장센터를 엽니다.');
+    if (/android/i.test(navigator.userAgent)) {
+      window.location.href = 'intent://window-ho.github.io/verygoodhistory/backup.html#report-image#Intent;scheme=https;package=com.android.chrome;end;';
+    } else {
+      window.open(BACKUP_SITE_URL + '#report-image', '_blank');
+    }
+  } catch (e) {
+    console.error('이미지 전달 오류:', e);
+    alert('이미지 복사에 실패했습니다. 앱의 클립보드 권한을 확인한 뒤 다시 시도해 주세요.');
+  }
+}
+
+function confirmClearFarmData() {
+let farmName = farmDetails[currentFarmId].alias;
+let step1 = confirm(`[${farmName}]의 모든 기록을 초기화하시겠습니까? (1/2 단계)`);
+if (!step1) return;
+let step2 = confirm(`정말 초기화됩니다! [${farmName}] 데이터를 완전히 삭제하시겠습니까? (2/2 단계)`);
+if (step2) {
+allFarmData[currentFarmId] = [];
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+alert('현재 농가 데이터가 초기화되었습니다.');
+}
+}
+
+document.querySelectorAll('input[type="date"]').forEach(el => el.valueAsDate = new Date());
+
+function switchTab(tabId) {
+document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+document.getElementById('tab-' + tabId).classList.add('active');
+document.getElementById('btn-' + tabId).classList.add('active');
+}
+
+function autoSaveAndBackup() {
+farmDetails[currentFarmId].updatedAt = Date.now();
+localStorage.setItem('farm_app_details_v1031', JSON.stringify(farmDetails));
+localStorage.setItem('farm_app_all_data_v1031', JSON.stringify(allFarmData));
+}
+
+function renderTable() {
+const tbody = document.getElementById('dataBody');
+tbody.innerHTML = '';
+
+let farmData = allFarmData[currentFarmId] || [];
+let fYear = document.getElementById('filterYear').value;
+let fMonth = document.getElementById('filterMonth').value;
+
+let cropIncSum = 0, etcIncSum = 0, expSum = 0, workSum = 0;
+
+farmData.forEach((item, index) => {
+let itemYear = item.date ? item.date.slice(0, 4) : '';
+let itemMonth = item.date && item.date.length >= 7 ? item.date.slice(5, 7) : '';
+
+if (fYear !== 'all' && itemYear !== fYear) return;
+if (fMonth !== 'all' && itemMonth !== fMonth) return;
+
+const tr = document.createElement('tr');
+tr.className = 'clickable-row';
+tr.innerHTML = `<td onclick="openEditModal(${index})">${item.date}</td><td onclick="openEditModal(${index})">${item.category}</td><td onclick="openEditModal(${index})">${item.item}</td><td onclick="openEditModal(${index})">${item.valStr}</td><td><button onclick="deleteRecord(${index})">X</button></td>`;
+tbody.appendChild(tr);
+
+if (item.type === 'cropInc') cropIncSum += item.val;
+if (item.type === 'etcInc') etcIncSum += item.val;
+if (item.type === 'expense' || item.type === 'tax') expSum += item.val;
+if (item.type === 'work') workSum += item.val;
+});
+
+document.getElementById('cropIncomeSum').innerText = cropIncSum.toLocaleString();
+document.getElementById('etcIncomeSum').innerText = etcIncSum.toLocaleString();
+document.getElementById('expenseSum').innerText = expSum.toLocaleString();
+document.getElementById('workTimeSum').innerText = workSum;
+
+autoSaveAndBackup();
+}
+
+function openEditModal(index) {
+editingIndex = index;
+const item = allFarmData[currentFarmId][index];
+document.getElementById('editModalTitle').innerText = item.imgData ? '사진 및 기록 크게 보기' : '기록 수정하기';
+
+if (item.imgData) {
+document.getElementById('imageViewerArea').style.display = 'block';
+document.getElementById('viewFullImage').src = item.imgData;
+} else {
+document.getElementById('imageViewerArea').style.display = 'none';
+}
+
+document.getElementById('edit-date').value = item.date;
+document.getElementById('edit-item').value = item.item;
+document.getElementById('edit-valStr').value = item.valStr.replace(/<[^>]*>?/gm, '');
+document.getElementById('edit-val').value = item.val;
+
+document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+function saveEditedRecord() {
+if (editingIndex === -1) return;
+const item = allFarmData[currentFarmId][editingIndex];
+
+item.date = document.getElementById('edit-date').value;
+item.item = document.getElementById('edit-item').value;
+item.val = Number(document.getElementById('edit-val').value) || 0;
+if (!item.imgData) item.valStr = document.getElementById('edit-valStr').value;
+
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+closeEditModal();
+alert('수정 내용이 저장되었습니다.');
+}
+
+function saveIncomeRecord() {
+const date = document.getElementById('cropInc-date').value;
+const itemInput = document.getElementById('cropInc-item').value;
+const qty = document.getElementById('cropInc-qty').value;
+const amount = Number(document.getElementById('cropInc-amount').value) || 0;
+const fee = Number(document.getElementById('cropInc-fee').value) || 0;
+const spotKg = document.getElementById('cropInc-spotKg').value;
+const spotItem = document.getElementById('cropInc-spotItem').value;
+const selfCons = document.getElementById('cropInc-self').value;
+const gift = document.getElementById('cropInc-gift').value;
+const other = document.getElementById('cropInc-other').value;
+
+if (!itemInput) { alert('품목명을 입력해 주세요.'); return; }
+
+let details = `판매:${amount.toLocaleString()}원(수수료:${fee.toLocaleString()})`;
+if (qty) details += `, 수량:${qty}`;
+if (spotKg) details += `, 현물:${spotKg}kg(${spotItem || '기타'})`;
+if (selfCons) details += `, 자가소비:${selfCons}`;
+if (gift) details += `, 증여:${gift}`;
+if (other) details += `, 기타:${other}`;
+
+allFarmData[currentFarmId].push({
+type: 'cropInc',
+date: date,
+category: '농작물수입',
+item: itemInput,
+val: amount,
+valStr: details
+});
+
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+alert('농작물 수입이 저장되었습니다.');
+}
+
+function saveEtcIncomeRecord() {
+const date = document.getElementById('etcInc-date').value;
+const category = document.getElementById('etcInc-category').value;
+const item = document.getElementById('etcInc-item').value;
+const amount = Number(document.getElementById('etcInc-amount').value) || 0;
+
+if (!item) { alert('내역/출처를 입력해 주세요.'); return; }
+
+allFarmData[currentFarmId].push({
+type: 'etcInc',
+date: date,
+category: category,
+item: item,
+val: amount,
+valStr: amount.toLocaleString() + '원'
+});
+
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+alert('수입표가 저장되었습니다.');
+}
+
+function saveRecord(type) {
+let date, category, item, val, valStr;
+
+if (type === 'crop') {
+date = document.getElementById('crop-date').value;
+category = document.getElementById('crop-type').value;
+const alias = document.getElementById('crop-alias').value.trim();
+const cropName = document.getElementById('crop-name').value;
+const cropArea = document.getElementById('crop-area').value;
+
+item = (alias ? `[${alias}] ` : '') + cropName + (cropArea ? ` (${cropArea})` : '');
+valStr = (category === '수확') ? document.getElementById('crop-qty').value : '-';
+val = 0;
+} else if (type === 'expense') {
+date = document.getElementById('exp-date').value;
+category = document.getElementById('exp-category').value;
+item = document.getElementById('exp-item').value;
+val = Number(document.getElementById('exp-amount').value) || 0;
+valStr = val.toLocaleString() + '원';
+} else if (type === 'work') {
+date = document.getElementById('work-date').value;
+category = '작업시간';
+item = document.getElementById('work-item').value + ' (' + document.getElementById('work-persons').value + '명)';
+val = Number(document.getElementById('work-hours').value) || 0;
+valStr = val + '시간';
+} else if (type === 'tax') {
+date = document.getElementById('tax-date').value;
+category = document.getElementById('tax-category').value;
+item = document.getElementById('tax-item').value;
+val = Number(document.getElementById('tax-amount').value) || 0;
+valStr = val.toLocaleString() + '원';
+}
+
+allFarmData[currentFarmId].push({ type, date, category, item, val, valStr });
+
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+alert('기록이 저장되었습니다.');
+}
+
+function deleteRecord(index) {
+if (confirm('이 기록을 삭제하시겠습니까?')) {
+allFarmData[currentFarmId].splice(index, 1);
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+}
+}
+
+initFarmSelect();
+renderTable();
+</script>
 </body>
 </html>
