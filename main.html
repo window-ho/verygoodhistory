@@ -24,16 +24,8 @@ margin: 0;
 padding: 0;
 font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
 }
-/* 모바일 길게 누르기 메뉴(복사·모두 선택·웹 검색 등)와 이미지 저장 메뉴 차단 */
-html, body, body * {
--webkit-touch-callout: none !important;
--webkit-user-select: none !important;
--moz-user-select: none !important;
--ms-user-select: none !important;
-user-select: none !important;
-}
-/* 입력란은 정상적으로 입력·수정할 수 있도록 허용 */
-input, textarea, select, [contenteditable="true"] {
+/* 꾹 누르기, 드래그, 이미지 저장 방지 전면 해제 */
+body, html, img, canvas, div, table, td, th {
 -webkit-user-select: text !important;
 -moz-user-select: text !important;
 -ms-user-select: text !important;
@@ -342,9 +334,9 @@ touch-action: pan-y;
 display: block;
 width: 100%;
 height: auto;
--webkit-user-select: none !important;
-user-select: none !important;
--webkit-touch-callout: none !important;
+-webkit-user-select: none;
+user-select: none;
+-webkit-touch-callout: default;
 touch-action: pan-y;
 }
 #drawingCanvas {
@@ -429,7 +421,7 @@ border-top: 1px solid #ddd;
 line-height: 1.4;
 }
 </style>
-<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=13838"></script>
+<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=13238"></script>
 </head>
 <body>
 
@@ -663,12 +655,14 @@ line-height: 1.4;
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
 <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
-아래 [이미지로 저장] 버튼을 눌러 이미지 전용 사이트에서 PNG 파일로 저장하세요.
+아래 버튼으로 저장하거나, 이미지를 별도 화면에서 열어 저장할 수 있습니다.
 </p>
 <div id="reportImagePreview" style="border:1px solid #ccc; border-radius:4px; margin-bottom:12px; background:#f9f9f9;">
-<img id="generatedReportImg" alt="보고서 이미지" oncontextmenu="return false;" draggable="false">
+<img id="generatedReportImg" alt="보고서 이미지" oncontextmenu="return true;">
 </div>
-<button class="btn btn-backup" style="width:100%; margin-bottom:8px;" onclick="copyReportImageAndOpenChrome()">💾 이미지로 저장</button>
+<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadReportImageDirectly()">💾 이미지 저장 / 공유</button>
+<button class="btn" style="width:100%; margin-bottom:8px; background:#455a64; color:white;" onclick="openReportImageInNewPage()">🖼️ 이미지 새 화면으로 열기</button>
+<button class="btn btn-backup" style="width:100%; margin-bottom:8px;" onclick="copyReportImageAndOpenChrome()">🌐 크롬에서 이미지 저장하기</button>
 <div class="btn-group">
 <button class="btn btn-danger" onclick="closeReportImageModal()">닫기</button>
 </div>
@@ -679,16 +673,13 @@ line-height: 1.4;
 <div class="modal-content">
 <h3 style="margin-bottom:10px; color:#7b1fa2;">💾 데이터 백업 및 복원</h3>
 <p style="font-size:0.82rem; color:#555; line-height:1.4; margin-bottom:12px;">
-백업 데이터를 클립보드에 복사한 뒤 전용 백업 사이트에서 JSON 파일로 저장합니다.
+크롬 브라우저로 연결 시 백업 데이터가 자동으로 클립보드에 복사됩니다.
 </p>
 
 <div style="background:#f3e5f5; padding:10px; border-radius:6px; margin-bottom:12px;">
-<strong style="font-size:0.9rem; color:#4a148c;">1단계: 전용 백업 사이트로 데이터 전달</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">버튼을 누르면 먼저 데이터 복사를 시도하고, 성공하면 크롬 백업 사이트를 엽니다.</p>
-<button class="btn btn-backup" style="width:100%;" onclick="copyAndOpenExternalBackupSite()">🌐 백업 사이트 열기</button>
-<textarea id="backupManualCopyArea" aria-label="백업 데이터 수동 복사" placeholder="자동 복사 실패 시 이 데이터를 길게 눌러 복사한 뒤 백업 사이트에 붙여넣으세요." style="display:none; width:100%; height:120px; margin-top:8px; font-size:11px; background:#fff; -webkit-user-select:text !important; user-select:text !important; -webkit-touch-callout:default !important;"></textarea>
-<button id="manualOpenBackupSiteBtn" class="btn btn-backup" style="display:none; width:100%; margin-top:8px;" onclick="openBackupSiteExternal()">복사 후 백업 사이트 열기</button>
-<button class="btn btn-restore" style="width:100%; margin-top:8px;" onclick="downloadBackupJsonDirect()">백업 파일 바로 저장</button>
+<strong style="font-size:0.9rem; color:#4a148c;">1단계: 크롬 백업 사이트 연동 (데이터 자동 복사)</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">버튼을 누르면 데이터가 자동 복사되며 크롬 창이 열립니다.</p>
+<button class="btn btn-backup" style="width:100%;" onclick="copyAndOpenExternalBackupSite()">🌐 크롬 브라우저로 백업 열기</button>
 </div>
 
 <div style="background:#e8eaf6; padding:10px; border-radius:6px; margin-bottom:12px;">
@@ -789,7 +780,7 @@ line-height: 1.4;
 <p><strong>3. 특화 부가 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
 <li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 길게 눌러 저장할 수 있습니다.</li>
-<li><strong>📷 보고서 이미지 생성:</strong> 현장 기록표를 이미지로 변환한 뒤 [이미지로 저장]를 눌러 PNG 파일로 저장할 수 있습니다.</li>
+<li><strong>📷 보고서 이미지 생성:</strong> 현장 기록표를 이미지로 변환한 뒤 [크롬에서 이미지 저장하기]를 눌러 PNG 파일로 저장할 수 있습니다.</li>
 <li><strong>💾 데이터 백업 및 복원:</strong> 크롬 브라우저 창으로 데이터가 자동 복사되며 연동됩니다.</li>
 </ul>
 </div>
@@ -825,9 +816,8 @@ line-height: 1.4;
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.52";
+const APP_VERSION = "v1.0.51";
 const BACKUP_SITE_URL = "https://window-ho.github.io/verygoodhistory/backup.html";
-const IMAGE_SITE_URL = "https://window-ho.github.io/verygoodhistory/img.html";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
 let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
@@ -1053,105 +1043,53 @@ document.getElementById('manualModal').style.display = 'none';
 
 function openBackupModal() {
 document.getElementById('appRestoreFileInput').value = '';
-const manualBox = document.getElementById('backupManualCopyArea');
-const manualOpenBtn = document.getElementById('manualOpenBackupSiteBtn');
-if (manualBox) { manualBox.value = ''; manualBox.style.display = 'none'; }
-if (manualOpenBtn) manualOpenBtn.style.display = 'none';
 document.getElementById('backupModal').style.display = 'flex';
 }
 function closeBackupModal() {
 document.getElementById('backupModal').style.display = 'none';
 }
 
-/* 백업 데이터를 클립보드에 전달하고 전용 backup.html을 엽니다.
-   사용자 클릭 직후 동기 복사를 먼저 시도해 Android WebView의 사용자 활성화 소실을 피합니다. */
-async function copyAndOpenExternalBackupSite() {
-  autoSaveAndBackup();
-  const backupObj = {
-    app: "슬기로운업무노트(농가경제)",
-    version: APP_VERSION,
-    exportedAt: new Date().toISOString(),
-    details: farmDetails,
-    data: allFarmData
-  };
-  const jsonString = JSON.stringify(backupObj);
-  if (!jsonString || jsonString.length < 10) {
-    alert("백업할 데이터가 없습니다. 농가 데이터 상태를 확인해 주세요.");
-    return;
-  }
+/* 데이터 자동 복사 후 크롬 외부 브라우저 창으로 안전 연동 */
+function copyAndOpenExternalBackupSite() {
+const backupObj = {
+app: "슬기로운업무노트(농가경제)",
+version: APP_VERSION,
+exportedAt: new Date().toISOString(),
+details: farmDetails,
+data: allFarmData
+};
+const jsonString = JSON.stringify(backupObj);
 
-  const manualBox = document.getElementById("backupManualCopyArea");
-  const manualOpenBtn = document.getElementById("manualOpenBackupSiteBtn");
-  if (manualBox) { manualBox.value = jsonString; manualBox.style.display = "none"; }
-  if (manualOpenBtn) manualOpenBtn.style.display = "none";
-
-  // 1) 클릭 이벤트 안에서 동기 복사 먼저 시도
-  let copied = fallbackExternalCopy(jsonString);
-
-  // 2) execCommand가 차단된 환경에서만 Clipboard API 시도
-  if (!copied && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-    try { await navigator.clipboard.writeText(jsonString); copied = true; }
-    catch (err) { console.warn("Clipboard API 복사 실패", err); }
-  }
-
-  if (copied) {
-    alert("백업 데이터 복사가 완료되었습니다. 전용 백업 사이트에서 [클립보드에서 백업 데이터 불러오기]를 눌러 저장하세요.");
-    openBackupSiteExternal();
-    return;
-  }
-
-  // 복사 실패 시 실제 데이터가 보이도록 노출하고 사용자가 직접 복사할 수 있게 합니다.
-  if (manualBox) {
-    manualBox.style.display = "block";
-    manualBox.focus();
-    manualBox.select();
-    manualBox.setSelectionRange(0, manualBox.value.length);
-  }
-  if (manualOpenBtn) manualOpenBtn.style.display = "block";
-  alert("자동 복사가 차단되었습니다. 아래 데이터 입력란을 길게 눌러 [복사]한 다음, ‘복사 후 백업 사이트 열기’를 눌러 주세요. 또는 ‘백업 파일 바로 저장’을 이용할 수 있습니다.");
+if (navigator.clipboard && navigator.clipboard.writeText) {
+navigator.clipboard.writeText(jsonString).then(() => {
+alert("전체 백업 데이터가 클립보드에 자동 복사되었습니다!\n크롬 브라우저가 열리면 붙여넣기(Ctrl+V 등)하여 파일을 만드세요.");
+openChromeBrowserExternal();
+}).catch(() => {
+fallbackExternalCopy(jsonString);
+});
+} else {
+fallbackExternalCopy(jsonString);
+}
 }
 
 function fallbackExternalCopy(text) {
-  const tempInput = document.createElement("textarea");
-  tempInput.value = text;
-  tempInput.setAttribute("readonly", "");
-  tempInput.setAttribute("aria-hidden", "true");
-  tempInput.style.cssText = "position:fixed;left:0;top:0;width:100%;height:2px;padding:0;border:0;opacity:0.02;z-index:2147483647;";
-  document.body.appendChild(tempInput);
-  tempInput.focus();
-  tempInput.select();
-  tempInput.setSelectionRange(0, tempInput.value.length);
-  let ok = false;
-  try { ok = document.execCommand("copy") === true; } catch (err) { ok = false; }
-  tempInput.remove();
-  return ok;
+const tempInput = document.createElement("textarea");
+tempInput.value = text;
+document.body.appendChild(tempInput);
+tempInput.select();
+document.execCommand("copy");
+document.body.removeChild(tempInput);
+alert("전체 백업 데이터가 클립보드에 자동 복사되었습니다!\n크롬 브라우저가 열리면 붙여넣기하여 파일을 만드세요.");
+openChromeBrowserExternal();
 }
 
-function openBackupSiteExternal() {
-  if (/android/i.test(navigator.userAgent)) {
-    window.location.href = "intent://window-ho.github.io/verygoodhistory/backup.html#Intent;scheme=https;package=com.android.chrome;end;";
-  } else {
-    window.open(BACKUP_SITE_URL, "_blank");
-  }
+function openChromeBrowserExternal() {
+if (/android/i.test(navigator.userAgent)) {
+const intentUrl = `intent://window-ho.github.io/verygoodhistory/backup.html#Intent;scheme=https;package=com.android.chrome;end;`;
+window.location.href = intentUrl;
+} else {
+window.open(BACKUP_SITE_URL, '_system');
 }
-
-function downloadBackupJsonDirect() {
-  const backupObj = {
-    app: "슬기로운업무노트(농가경제)",
-    version: APP_VERSION,
-    exportedAt: new Date().toISOString(),
-    details: farmDetails,
-    data: allFarmData
-  };
-  const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: "application/json;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "농가경제_백업데이터_" + new Date().toISOString().slice(0,10) + ".json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 /* 앱 내에서 JSON 파일 바로 읽어서 복원하기 */
@@ -1395,6 +1333,70 @@ const src = document.getElementById('viewFullImage').src;
 if (src) openPhotoViewModal(src);
 }
 
+/* 이미지 직접 다운로드 함수들 */
+async function downloadReportImageDirectly() {
+const img = document.getElementById('generatedReportImg');
+if (!img || !img.src || img.src === window.location.href) {
+alert('먼저 [보고서 이미지 생성]을 눌러 이미지를 만들어 주세요.');
+return;
+}
+
+try {
+  const response = await fetch(img.src);
+  const blob = await response.blob();
+  await savePngBlob(blob, `농가경제_현장기록표_${getLocalDateString()}.png`);
+} catch (err) {
+  console.error('보고서 이미지 다운로드 오류:', err);
+  // data URL을 새 창으로 열면 Android 브라우저에서 길게 눌러 저장할 수 있습니다.
+  try {
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write('<meta name="viewport" content="width=device-width,initial-scale=1"><title>보고서 이미지 저장</title><p>이미지를 길게 눌러 저장하세요.</p><img src="' + img.src + '" style="width:100%;height:auto">');
+      win.document.close();
+    } else {
+      alert('브라우저가 새 창 열기를 차단했습니다. 이미지 미리보기에서 이미지를 길게 눌러 저장해 주세요.');
+    }
+  } catch (fallbackError) {
+    alert('이미지 저장에 실패했습니다. 이미지 미리보기에서 이미지를 길게 눌러 저장해 주세요.');
+  }
+}
+}
+
+function getLocalDateString() {
+const d = new Date();
+return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+async function savePngBlob(blob, filename) {
+  if (!blob || blob.size === 0) throw new Error('생성된 이미지 데이터가 비어 있습니다.');
+
+  // Android Chrome/WebView가 지원하면 공유 메뉴에서 파일 저장 또는 앱 전송이 가능합니다.
+  try {
+    const file = new File([blob], filename, { type: 'image/png' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: '현장 기록표 이미지' });
+      return;
+    }
+  } catch (shareError) {
+    if (shareError && shareError.name === 'AbortError') return;
+    console.warn('파일 공유 기능을 사용할 수 없어 다운로드 방식으로 전환합니다.', shareError);
+  }
+
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = objectUrl;
+  link.download = filename;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  // WebView에서 다운로드 속성을 무시하면 별도 화면 열기 기능으로 저장할 수 있습니다.
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 120000);
+}
+
 function downloadModalPhotoDirectly() {
 const imgSrc = document.getElementById('modalFullPhotoImg').src;
 if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
@@ -1544,7 +1546,28 @@ function closeReportImageModal() {
   window.scrollTo(0, reportModalScrollY);
 }
 
-/* 보고서 이미지 데이터를 클립보드로 전달한 뒤 전용 img.html을 엽니다. */
+function openReportImageInNewPage() {
+  const img = document.getElementById('generatedReportImg');
+  if (!img || !img.src || img.src === window.location.href) {
+    alert('먼저 보고서 이미지를 생성해 주세요.');
+    return;
+  }
+
+  // Android WebView/Chrome에서 이미지 자체를 별도 페이지로 열어
+  // 브라우저의 이미지 저장 메뉴를 사용할 수 있게 합니다.
+  const opened = window.open(img.src, '_blank');
+  if (!opened) {
+    const link = document.createElement('a');
+    link.href = img.src;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+}
+
+/* 보고서 이미지 데이터를 클립보드로 전달한 뒤 외부 크롬 백업센터에서 저장 */
 async function copyReportImageAndOpenChrome() {
   const img = document.getElementById('generatedReportImg');
   if (!img || !img.src || !img.src.startsWith('data:image/png')) {
@@ -1552,20 +1575,27 @@ async function copyReportImageAndOpenChrome() {
     return;
   }
   const imageData = img.src;
-  let copied = fallbackExternalCopy(imageData);
-  if (!copied && navigator.clipboard && navigator.clipboard.writeText) {
-    try { await navigator.clipboard.writeText(imageData); copied = true; }
-    catch (e) { console.warn('이미지 클립보드 복사 실패', e); }
-  }
-  if (!copied) {
-    alert('이미지 복사에 실패했습니다. 브라우저의 클립보드 권한을 확인한 뒤 다시 시도해 주세요.');
-    return;
-  }
-  alert('이미지 복사가 완료되었습니다. 이미지 전용 사이트에서 [클립보드에서 이미지 불러오기]를 눌러 저장하세요.');
-  if (/android/i.test(navigator.userAgent)) {
-    window.location.href = 'intent://window-ho.github.io/verygoodhistory/img.html#Intent;scheme=https;package=com.android.chrome;end;';
-  } else {
-    window.open(IMAGE_SITE_URL, '_blank');
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(imageData);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = imageData;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      if (!ok) throw new Error('클립보드 복사 권한이 없습니다.');
+    }
+    alert('보고서 이미지가 복사되었습니다. 크롬 이미지 저장센터를 엽니다.');
+    if (/android/i.test(navigator.userAgent)) {
+      window.location.href = 'intent://window-ho.github.io/verygoodhistory/backup.html#report-image#Intent;scheme=https;package=com.android.chrome;end;';
+    } else {
+      window.open(BACKUP_SITE_URL + '#report-image', '_blank');
+    }
+  } catch (e) {
+    console.error('이미지 전달 오류:', e);
+    alert('이미지 복사에 실패했습니다. 앱의 클립보드 권한을 확인한 뒤 다시 시도해 주세요.');
   }
 }
 
@@ -1582,14 +1612,6 @@ renderTable();
 alert('현재 농가 데이터가 초기화되었습니다.');
 }
 }
-
-// 앱 화면에서 길게 눌렀을 때 표시되는 브라우저 선택/검색 메뉴 차단
- document.addEventListener('contextmenu', function(e) {
-   if (!e.target.closest('input, textarea, select, [contenteditable="true"]')) e.preventDefault();
- }, { capture: true });
- document.addEventListener('selectstart', function(e) {
-   if (!e.target.closest('input, textarea, select, [contenteditable="true"]')) e.preventDefault();
- }, { capture: true });
 
 document.querySelectorAll('input[type="date"]').forEach(el => el.valueAsDate = new Date());
 
