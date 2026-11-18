@@ -674,7 +674,7 @@ line-height: 1.4;
 <div class="modal-content">
 <h3 style="margin-bottom:10px; color:#7b1fa2;">💾 데이터 백업 및 복원</h3>
 <p style="font-size:0.82rem; color:#555; line-height:1.4; margin-bottom:12px;">
-용량이 큰 사진을 제외한 텍스트 데이터가 최적화되어 백업 준비됩니다.
+측정 사진과 손글씨 메모 이미지가 모두 포함된 온전한 백업 데이터입니다.
 </p>
 
 <div style="background:#f3e5f5; padding:10px; border-radius:6px; margin-bottom:12px;">
@@ -687,7 +687,7 @@ line-height: 1.4;
 
 <div style="background:#e8eaf6; padding:10px; border-radius:6px; margin-bottom:12px;">
 <strong style="font-size:0.9rem; color:#1a237e;">2단계: 앱 내 백업 파일 복원하기</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">저장해 둔 백업 파일(.json)을 선택하면 곧바로 복원됩니다.</p>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">저장해 둔 백업 파일(.json)을 선택하면 사진까지 완벽히 복원됩니다.</p>
 <input type="file" id="appRestoreFileInput" accept=".json" onchange="restoreAppFromJsonFile(event)" style="font-size:0.85rem; background:#fff; padding:6px; width:100%; border:1px solid #cbd5e1; border-radius:4px;">
 </div>
 
@@ -784,7 +784,7 @@ line-height: 1.4;
 <ul style="margin-left:20px; margin-bottom:10px;">
 <li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 저장할 수 있습니다.</li>
 <li><strong>📷 보고서 이미지 생성:</strong> 현장 기록표를 이미지로 변환한 뒤 [이미지로 저장]을 누르면 이미지 페이지에서 즉시 확인할 수 있습니다.</li>
-<li><strong>💾 데이터 백업 및 복원:</strong> 대용량 사진을 최적화하여 멈춤 없이 안전하게 백업 및 복원할 수 있습니다.</li>
+<li><strong>💾 데이터 백업 및 복원:</strong> 사진 파일까지 온전하게 백업 및 복원할 수 있습니다.</li>
 </ul>
 </div>
 <div class="btn-group" style="margin-top:15px;">
@@ -814,12 +814,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.54</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.55</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.54";
+const APP_VERSION = "v1.0.55";
 const BACKUP_SITE_URL = "https://window-ho.github.io/verygoodhistory/backup.html";
 const IMAGE_SITE_URL = "https://window-ho.github.io/verygoodhistory/img.html";
 document.getElementById('footerVersion').innerText = APP_VERSION;
@@ -1045,30 +1045,16 @@ function closeManualModal() {
 document.getElementById('manualModal').style.display = 'none';
 }
 
-/* 대용량 사진 데이터를 최적화하여 멈춤 현상을 방지하는 백업 모달 열기 */
+/* 사진(imgData)이 유실되지 않고 온전하게 포함되도록 원상복구된 백업 모달 */
 function openBackupModal() {
   autoSaveAndBackup();
-  
-  let optimizedFarmData = {};
-  for (let farmId in allFarmData) {
-    optimizedFarmData[farmId] = (allFarmData[farmId] || []).map(item => {
-      let newItem = { ...item };
-      if (newItem.imgData) {
-        newItem.imgData = "[이미지 데이터 생략]";
-        if (newItem.valStr && newItem.valStr.includes('<img')) {
-          newItem.valStr = newItem.valStr.split('<img')[0].trim() + ' (사진 첨부됨)';
-        }
-      }
-      return newItem;
-    });
-  }
 
   const backupObj = {
     app: "슬기로운업무노트(농가경제)",
     version: APP_VERSION,
     exportedAt: new Date().toISOString(),
     details: farmDetails,
-    data: optimizedFarmData
+    data: allFarmData
   };
   
   const jsonString = JSON.stringify(backupObj);
@@ -1162,7 +1148,7 @@ autoSaveAndBackup();
 initFarmSelect();
 renderTable();
 closeBackupModal();
-alert("데이터가 성공적으로 복원되었습니다!");
+alert("사진 데이터를 포함하여 성공적으로 복원되었습니다!");
 }
 } else {
 alert("올바른 백업 파일 형식이 아닙니다.");
