@@ -421,7 +421,7 @@ border-top: 1px solid #ddd;
 line-height: 1.4;
 }
 </style>
-<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=12492"></script>
+<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=13238"></script>
 </head>
 <body>
 
@@ -662,6 +662,7 @@ line-height: 1.4;
 </div>
 <button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadReportImageDirectly()">💾 이미지 저장 / 공유</button>
 <button class="btn" style="width:100%; margin-bottom:8px; background:#455a64; color:white;" onclick="openReportImageInNewPage()">🖼️ 이미지 새 화면으로 열기</button>
+<button class="btn btn-backup" style="width:100%; margin-bottom:8px;" onclick="copyReportImageAndOpenChrome()">🌐 크롬에서 이미지 저장하기</button>
 <div class="btn-group">
 <button class="btn btn-danger" onclick="closeReportImageModal()">닫기</button>
 </div>
@@ -779,7 +780,7 @@ line-height: 1.4;
 <p><strong>3. 특화 부가 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
 <li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 길게 눌러 저장할 수 있습니다.</li>
-<li><strong>📷 보고서 이미지 생성:</strong> 현장 기록표를 이미지로 변환하여 꾹 누르거나 파일로 저장할 수 있습니다.</li>
+<li><strong>📷 보고서 이미지 생성:</strong> 현장 기록표를 이미지로 변환한 뒤 [크롬에서 이미지 저장하기]를 눌러 PNG 파일로 저장할 수 있습니다.</li>
 <li><strong>💾 데이터 백업 및 복원:</strong> 크롬 브라우저 창으로 데이터가 자동 복사되며 연동됩니다.</li>
 </ul>
 </div>
@@ -1563,6 +1564,38 @@ function openReportImageInNewPage() {
     document.body.appendChild(link);
     link.click();
     link.remove();
+  }
+}
+
+/* 보고서 이미지 데이터를 클립보드로 전달한 뒤 외부 크롬 백업센터에서 저장 */
+async function copyReportImageAndOpenChrome() {
+  const img = document.getElementById('generatedReportImg');
+  if (!img || !img.src || !img.src.startsWith('data:image/png')) {
+    alert('먼저 보고서 이미지를 생성해 주세요.');
+    return;
+  }
+  const imageData = img.src;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(imageData);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = imageData;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      if (!ok) throw new Error('클립보드 복사 권한이 없습니다.');
+    }
+    alert('보고서 이미지가 복사되었습니다. 크롬 이미지 저장센터를 엽니다.');
+    if (/android/i.test(navigator.userAgent)) {
+      window.location.href = 'intent://window-ho.github.io/verygoodhistory/backup.html#report-image#Intent;scheme=https;package=com.android.chrome;end;';
+    } else {
+      window.open(BACKUP_SITE_URL + '#report-image', '_blank');
+    }
+  } catch (e) {
+    console.error('이미지 전달 오류:', e);
+    alert('이미지 복사에 실패했습니다. 앱의 클립보드 권한을 확인한 뒤 다시 시도해 주세요.');
   }
 }
 
