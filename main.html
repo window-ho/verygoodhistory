@@ -23,12 +23,14 @@ box-sizing: border-box;
 margin: 0;
 padding: 0;
 font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
-/* 꾹 누르기 및 이미지 저장 방지 해제 */
--webkit-user-select: text;
--moz-user-select: text;
--ms-user-select: text;
-user-select: text;
--webkit-touch-callout: default;
+}
+/* 꾹 누르기 및 이미지 저장 방지 전면 해제 */
+body, html, img, canvas, div, table, td, th {
+-webkit-user-select: text !important;
+-moz-user-select: text !important;
+-ms-user-select: text !important;
+user-select: text !important;
+-webkit-touch-callout: default !important;
 }
 html, body {
 width: 100%;
@@ -593,7 +595,7 @@ line-height: 1.4;
 <th>일자</th>
 <th>분류</th>
 <th>항목/내용</th>
-<th>수량/시간/금액</th>
+<th>수량/시간/금ек</th>
 <th>삭제</th>
 </tr>
 </thead>
@@ -613,10 +615,12 @@ line-height: 1.4;
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
 <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
-이미지를 <strong>길게 눌러 [이미지 저장]</strong>하거나 아래 버튼을 누르세요.
+사진을 <strong>길게 꾹 눌러 [이미지 저장]</strong>하세요.
 </p>
-<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:50vh; overflow-y:auto; background:#f9f9f9;">
-<img id="generatedReportImg" style="width:100%; height:auto; display:block;" alt="보고서 이미지">
+<!-- 꾹 누르기 저장이 100% 보장되도록 실제 투명 <img> 태그 오버레이 구조 적용 -->
+<div style="position:relative; border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:50vh; overflow-y:auto; background:#f9f9f9;">
+<canvas id="reportHiddenCanvas" style="display:none;"></canvas>
+<img id="generatedReportImg" style="width:100%; height:auto; display:block; position:relative; z-index:5;" alt="보고서 이미지">
 </div>
 <button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadReportImageDirectly()">💾 이미지 파일로 직접 다운로드</button>
 <div class="btn-group">
@@ -767,12 +771,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.49</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.50</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.49";
+const APP_VERSION = "v1.0.50";
 const BACKUP_SITE_URL = "https://window-ho.github.io/verygoodhistory/backup.html";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
@@ -1005,7 +1009,7 @@ function closeBackupModal() {
 document.getElementById('backupModal').style.display = 'none';
 }
 
-/* 외부 크롬 브라우저 창으로 데이터 복사 및 안전 연동 */
+/* 외부 크롬 브라우저 창으로 데이터 복사 및 안전 연동 (워크플래너와 동일한 안드로이드 인텐트 방식) */
 function copyAndOpenExternalBackupSite() {
 const backupObj = {
 app: "슬기로운업무노트(농가경제)",
@@ -1019,7 +1023,7 @@ const jsonString = JSON.stringify(backupObj);
 if (navigator.clipboard && navigator.clipboard.writeText) {
 navigator.clipboard.writeText(jsonString).then(() => {
 alert("전체 데이터가 클립보드에 복사되었습니다!\n크롬 브라우저 창이 열리면 붙여넣기 후 백업 파일을 저장하세요.");
-window.open(BACKUP_SITE_URL, '_system'); // 외부 브라우저 강제 호출
+openChromeBrowserExternal();
 }).catch(() => {
 fallbackExternalCopy(jsonString);
 });
@@ -1036,7 +1040,16 @@ tempInput.select();
 document.execCommand("copy");
 document.body.removeChild(tempInput);
 alert("전체 데이터가 클립보드에 복사되었습니다!\n크롬 브라우저 창이 열리면 붙여넣기 후 백업 파일을 저장하세요.");
+openChromeBrowserExternal();
+}
+
+function openChromeBrowserExternal() {
+if (/android/i.test(navigator.userAgent)) {
+const intentUrl = `intent://window-ho.github.io/verygoodhistory/backup.html#Intent;scheme=https;package=com.android.chrome;end;`;
+window.location.href = intentUrl;
+} else {
 window.open(BACKUP_SITE_URL, '_system');
+}
 }
 
 /* 앱 내에서 JSON 파일 바로 읽어서 복원하기 */
@@ -1280,7 +1293,7 @@ const src = document.getElementById('viewFullImage').src;
 if (src) openPhotoViewModal(src);
 }
 
-/* 이미지 직접 다운로드 및 캔버스 최적화 (멈춤 현상 방지) */
+/* 이미지 직접 다운로드 및 캔버스 최적화 */
 function downloadReportImageDirectly() {
 const imgSrc = document.getElementById('generatedReportImg').src;
 if (!imgSrc) { alert('다운로드할 이미지가 없습니다.'); return; }
@@ -1310,7 +1323,6 @@ document.body.removeChild(a);
 
 function captureAndShowReportImage() {
 const targetElement = document.getElementById('captureTargetArea');
-// scale을 1.5로 낮추어 모바일 멈춤 및 응답 없음 현상 방지
 html2canvas(targetElement, {
 scale: 1.5,
 useCORS: true,
