@@ -300,6 +300,45 @@ box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 max-height: 90vh;
 overflow-y: auto;
 }
+/* Android: 보고서 모달이 열려 있을 때 배경 페이지 스크롤 및 스크롤 전달 방지 */
+body.report-modal-open {
+position: fixed;
+width: 100%;
+overflow: hidden;
+left: 0;
+right: 0;
+}
+#reportImageModal {
+height: 100vh;
+height: 100dvh;
+overflow: hidden;
+overscroll-behavior: contain;
+touch-action: pan-y;
+}
+#reportImageModal .modal-content {
+max-height: 86vh;
+max-height: 86dvh;
+overflow-y: auto;
+overscroll-behavior: contain;
+-webkit-overflow-scrolling: touch;
+}
+#reportImagePreview {
+max-height: 58vh;
+max-height: 58dvh;
+overflow: auto;
+overscroll-behavior: contain;
+-webkit-overflow-scrolling: touch;
+touch-action: pan-y;
+}
+#generatedReportImg {
+display: block;
+width: 100%;
+height: auto;
+-webkit-user-select: none;
+user-select: none;
+-webkit-touch-callout: default;
+touch-action: pan-y;
+}
 #drawingCanvas {
 border: 2px dashed var(--primary);
 background: #ffffff;
@@ -382,7 +421,7 @@ border-top: 1px solid #ddd;
 line-height: 1.4;
 }
 </style>
-<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=12353"></script>
+<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=12492"></script>
 </head>
 <body>
 
@@ -616,13 +655,13 @@ line-height: 1.4;
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
 <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
-사진을 <strong>길게 꾹 눌러 [이미지 저장]</strong>하세요.
+아래 버튼으로 저장하거나, 이미지를 별도 화면에서 열어 저장할 수 있습니다.
 </p>
-<!-- 꾹 누르기 저장이 확실히 되도록 감싸는 컨테이너 및 <img> 태그 -->
-<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:50vh; overflow-y:auto; background:#f9f9f9; -webkit-user-select: text; user-select: text;">
-<img id="generatedReportImg" style="width:100%; height:auto; display:block; pointer-events: auto; -webkit-touch-callout: default;" alt="보고서 이미지">
+<div id="reportImagePreview" style="border:1px solid #ccc; border-radius:4px; margin-bottom:12px; background:#f9f9f9;">
+<img id="generatedReportImg" alt="보고서 이미지" oncontextmenu="return true;">
 </div>
-<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadReportImageDirectly()">💾 이미지 파일로 직접 다운로드</button>
+<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadReportImageDirectly()">💾 이미지 저장 / 공유</button>
+<button class="btn" style="width:100%; margin-bottom:8px; background:#455a64; color:white;" onclick="openReportImageInNewPage()">🖼️ 이미지 새 화면으로 열기</button>
 <div class="btn-group">
 <button class="btn btn-danger" onclick="closeReportImageModal()">닫기</button>
 </div>
@@ -1346,13 +1385,15 @@ async function savePngBlob(blob, filename) {
   const link = document.createElement('a');
   link.href = objectUrl;
   link.download = filename;
+  link.target = '_blank';
+  link.rel = 'noopener';
   link.style.display = 'none';
   document.body.appendChild(link);
   link.click();
   link.remove();
 
-  // 일부 Android WebView는 a[download]를 무시하므로 잠시 후 URL을 정리합니다.
-  setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+  // WebView에서 다운로드 속성을 무시하면 별도 화면 열기 기능으로 저장할 수 있습니다.
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 120000);
 }
 
 function downloadModalPhotoDirectly() {
@@ -1476,7 +1517,7 @@ async function captureAndShowReportImage() {
     if (!imageURL || imageURL === 'data:,') throw new Error('이미지 파일을 생성하지 못했습니다.');
 
     document.getElementById('generatedReportImg').src = imageURL;
-    document.getElementById('reportImageModal').style.display = 'flex';
+    openReportImageModal();
   } catch (err) {
     console.error('보고서 이미지 생성 오류:', err);
     alert('보고서 이미지 생성에 실패했습니다.\n' + (err && err.message ? err.message : '브라우저에서 이미지 변환을 완료하지 못했습니다.'));
@@ -1488,8 +1529,41 @@ async function captureAndShowReportImage() {
   }
 }
 
+let reportModalScrollY = 0;
+
+function openReportImageModal() {
+  reportModalScrollY = window.scrollY || window.pageYOffset || 0;
+  document.body.style.top = `-${reportModalScrollY}px`;
+  document.body.classList.add('report-modal-open');
+  document.getElementById('reportImageModal').style.display = 'flex';
+}
+
 function closeReportImageModal() {
-document.getElementById('reportImageModal').style.display = 'none';
+  document.getElementById('reportImageModal').style.display = 'none';
+  document.body.classList.remove('report-modal-open');
+  document.body.style.top = '';
+  window.scrollTo(0, reportModalScrollY);
+}
+
+function openReportImageInNewPage() {
+  const img = document.getElementById('generatedReportImg');
+  if (!img || !img.src || img.src === window.location.href) {
+    alert('먼저 보고서 이미지를 생성해 주세요.');
+    return;
+  }
+
+  // Android WebView/Chrome에서 이미지 자체를 별도 페이지로 열어
+  // 브라우저의 이미지 저장 메뉴를 사용할 수 있게 합니다.
+  const opened = window.open(img.src, '_blank');
+  if (!opened) {
+    const link = document.createElement('a');
+    link.href = img.src;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
 }
 
 function confirmClearFarmData() {
