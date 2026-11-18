@@ -615,7 +615,7 @@ line-height: 1.4;
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
 <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
-아래 이미지를 <strong>길게 눌러 [이미지 다운로드]</strong> 또는 <strong>[이미지 저장]</strong>을 선택하세요.
+아래 이미지를 <strong>길게 눌러 [이미지 저장]</strong>을 선택하세요.
 </p>
 <div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:55vh; overflow-y:auto; background:#f9f9f9;">
 <img id="generatedReportImg" style="width:100%; height:auto; display:block;" alt="보고서 이미지">
@@ -630,19 +630,21 @@ line-height: 1.4;
 <div class="modal-content">
 <h3 style="margin-bottom:10px; color:#7b1fa2;">💾 데이터 백업 및 복원</h3>
 <p style="font-size:0.82rem; color:#555; line-height:1.4; margin-bottom:12px;">
-버튼을 누르면 데이터가 복사되며 <strong>verygoodhistory/backup.html</strong> 사이트로 안전하게 이동합니다.
+앱 내에서 직접 백업 파일을 저장하거나 불러와서 간편하게 복원할 수 있습니다.
 </p>
-<div style="background:#f3e5f5; padding:10px; border-radius:6px; margin-bottom:15px;">
-<strong style="font-size:0.9rem; color:#4a148c;">1단계: 전체 데이터 백업하기</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 8px 0;">아래 버튼을 눌러 백업 사이트로 이동하세요.</p>
-<button class="btn btn-backup" style="width:100%;" onclick="copyAndOpenBackupSite()">📋 데이터 복사 & 백업사이트 열기</button>
+
+<div style="background:#f3e5f5; padding:10px; border-radius:6px; margin-bottom:12px;">
+<strong style="font-size:0.9rem; color:#4a148c;">1단계: 데이터 백업하기</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">버튼을 누르면 백업 파일(.json)이 즉시 다운로드됩니다.</p>
+<button class="btn btn-backup" style="width:100%;" onclick="downloadBackupJsonFile()">📥 백업 파일(.json) 다운로드</button>
 </div>
+
 <div style="background:#e8eaf6; padding:10px; border-radius:6px; margin-bottom:12px;">
-<strong style="font-size:0.9rem; color:#1a237e;">2단계: 데이터 복원하기</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">백업해둔 텍스트를 아래 칸에 붙여넣고 복원 버튼을 누르세요.</p>
-<textarea id="restoreDataTextarea" rows="3" placeholder="백업 텍스트를 여기에 붙여넣으세요..." style="font-size:0.75rem; margin-bottom:8px;"></textarea>
-<button class="btn btn-restore" style="width:100%;" onclick="restoreFromTextarea()">📥 붙여넣은 데이터로 복원하기</button>
+<strong style="font-size:0.9rem; color:#1a237e;">2단계: 앱에서 파일 불러와 복원하기</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">저장해 둔 백업 파일(.json)을 선택하면 곧바로 복원됩니다.</p>
+<input type="file" id="appRestoreFileInput" accept=".json" onchange="restoreAppFromJsonFile(event)" style="font-size:0.85rem; background:#fff; padding:6px; width:100%; border:1px solid #cbd5e1; border-radius:4px;">
 </div>
+
 <div class="btn-group">
 <button class="btn btn-danger" onclick="closeBackupModal()">닫기</button>
 </div>
@@ -735,7 +737,7 @@ line-height: 1.4;
 <ul style="margin-left:20px; margin-bottom:10px;">
 <li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 길게 눌러 저장할 수 있습니다.</li>
 <li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표를 이미지로 변환하여 팝업창에서 길게 눌러 저장할 수 있습니다.</li>
-<li><strong>💾 데이터 백업 및 복원:</strong> verygoodhistory 백업 사이트와 연동하여 안전하게 백업하고 복원할 수 있습니다.</li>
+<li><strong>💾 데이터 백업 및 복원:</strong> 앱 내에서 직접 `.json` 백업 파일을 저장하고 불러와 복원할 수 있습니다.</li>
 </ul>
 </div>
 <div class="btn-group" style="margin-top:15px;">
@@ -765,13 +767,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.46</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.47</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.46";
-const BACKUP_SITE_URL = "https://window-ho.github.io/verygoodhistory/backup.html";
+const APP_VERSION = "v1.0.47";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
 let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
@@ -996,14 +997,15 @@ document.getElementById('manualModal').style.display = 'none';
 }
 
 function openBackupModal() {
-document.getElementById('restoreDataTextarea').value = '';
+document.getElementById('appRestoreFileInput').value = '';
 document.getElementById('backupModal').style.display = 'flex';
 }
 function closeBackupModal() {
 document.getElementById('backupModal').style.display = 'none';
 }
 
-function copyAndOpenBackupSite() {
+/* 앱 내 직접 백업 파일 생성 및 다운로드 */
+function downloadBackupJsonFile() {
 const backupObj = {
 app: "슬기로운업무노트(농가경제)",
 version: APP_VERSION,
@@ -1011,41 +1013,25 @@ exportedAt: new Date().toISOString(),
 details: farmDetails,
 data: allFarmData
 };
-const jsonString = JSON.stringify(backupObj);
-
-if (navigator.clipboard && navigator.clipboard.writeText) {
-navigator.clipboard.writeText(jsonString).then(() => {
-alert("전체 데이터가 클립보드에 복사되었습니다!\n이동하는 백업 사이트에서 [붙여넣기] 후 파일로 저장하세요.");
-window.open(BACKUP_SITE_URL, "_blank");
-}).catch(() => {
-fallbackCopyText(jsonString);
-});
-} else {
-fallbackCopyText(jsonString);
-}
+const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj, null, 2));
+const downloadAnchor = document.createElement('a');
+downloadAnchor.setAttribute("href", dataStr);
+downloadAnchor.setAttribute("download", `농가경제_백업데이터_${new Date().toISOString().slice(0,10)}.json`);
+document.body.appendChild(downloadAnchor);
+downloadAnchor.click();
+downloadAnchor.remove();
 }
 
-function fallbackCopyText(text) {
-const tempInput = document.createElement("textarea");
-tempInput.value = text;
-document.body.appendChild(tempInput);
-tempInput.select();
-document.execCommand("copy");
-document.body.removeChild(tempInput);
-alert("전체 데이터가 클립보드에 복사되었습니다!\n이동하는 백업 사이트에서 [붙여넣기] 후 파일로 저장하세요.");
-window.open(BACKUP_SITE_URL, "_blank");
-}
-
-function restoreFromTextarea() {
-const rawText = document.getElementById('restoreDataTextarea').value.trim();
-if (!rawText) {
-alert("복원할 텍스트를 붙여넣어 주세요.");
-return;
-}
+/* 앱 내에서 JSON 파일 바로 읽어서 복원하기 */
+function restoreAppFromJsonFile(event) {
+const file = event.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = function(e) {
 try {
-const parsed = JSON.parse(rawText);
+const parsed = JSON.parse(e.target.result);
 if (parsed.details && parsed.data) {
-if (confirm("기존 데이터를 덮어쓰고 복원하시겠습니까?")) {
+if (confirm("이 백업 파일로 데이터를 덮어쓰고 복원하시겠습니까?")) {
 farmDetails = parsed.details;
 allFarmData = parsed.data;
 autoSaveAndBackup();
@@ -1055,11 +1041,13 @@ closeBackupModal();
 alert("데이터가 성공적으로 복원되었습니다!");
 }
 } else {
-alert("올바른 백업 데이터가 아닙니다.");
+alert("올바른 백업 파일 형식이 아닙니다.");
 }
 } catch (err) {
-alert("데이터 형식이 올바르지 않습니다. 백업 텍스트 전체를 정확히 붙여넣어 주세요.");
+alert("JSON 파일을 읽는 중 오류가 발생했습니다.");
 }
+};
+reader.readAsText(file);
 }
 
 const canvas = document.getElementById('drawingCanvas');
@@ -1496,7 +1484,6 @@ valStr = val.toLocaleString() + '원';
 allFarmData[currentFarmId].push({ type, date, category, item, val, valStr });
 
 autoSaveAndBackup();
-updateYearTest = true;
 updateYearFilterOptions(false);
 renderTable();
 alert('기록이 저장되었습니다.');
