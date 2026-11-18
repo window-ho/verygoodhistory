@@ -429,7 +429,7 @@ border-top: 1px solid #ddd;
 line-height: 1.4;
 }
 </style>
-<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=13540"></script>
+<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=13614"></script>
 </head>
 <body>
 
@@ -686,6 +686,7 @@ line-height: 1.4;
 <strong style="font-size:0.9rem; color:#4a148c;">1단계: 크롬 백업 사이트 연동 (데이터 자동 복사)</strong>
 <p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">버튼을 누르면 데이터가 자동 복사되며 크롬 창이 열립니다.</p>
 <button class="btn btn-backup" style="width:100%;" onclick="copyAndOpenExternalBackupSite()">🌐 크롬 브라우저로 백업 열기</button>
+<textarea id="backupManualCopyArea" aria-label="백업 데이터 수동 복사" placeholder="자동 복사에 실패한 경우 이 내용을 전체 선택해 복사하세요." style="display:none; width:100%; height:120px; margin-top:8px; font-size:11px; background:#fff; -webkit-user-select:text !important; user-select:text !important; -webkit-touch-callout:default !important;"></textarea>
 </div>
 
 <div style="background:#e8eaf6; padding:10px; border-radius:6px; margin-bottom:12px;">
@@ -1055,38 +1056,72 @@ function closeBackupModal() {
 document.getElementById('backupModal').style.display = 'none';
 }
 
-/* 데이터 자동 복사 후 크롬 외부 브라우저 창으로 안전 연동 */
-function copyAndOpenExternalBackupSite() {
-const backupObj = {
-app: "슬기로운업무노트(농가경제)",
-version: APP_VERSION,
-exportedAt: new Date().toISOString(),
-details: farmDetails,
-data: allFarmData
-};
-const jsonString = JSON.stringify(backupObj);
+/* 백업 데이터 복사: Clipboard API 우선, 실패 시 모바일 호환 execCommand 방식으로 재시도 */
+async function copyAndOpenExternalBackupSite() {
+  const backupObj = {
+    app: "슬기로운업무노트(농가경제)",
+    version: APP_VERSION,
+    exportedAt: new Date().toISOString(),
+    details: farmDetails,
+    data: allFarmData
+  };
+  const jsonString = JSON.stringify(backupObj);
+  if (!jsonString || jsonString.length < 10) {
+    alert("백업할 데이터가 없습니다. 농가 데이터 상태를 확인해 주세요.");
+    return;
+  }
 
-if (navigator.clipboard && navigator.clipboard.writeText) {
-navigator.clipboard.writeText(jsonString).then(() => {
-alert("전체 백업 데이터가 클립보드에 자동 복사되었습니다!\n크롬 브라우저가 열리면 붙여넣기(Ctrl+V 등)하여 파일을 만드세요.");
-openChromeBrowserExternal();
-}).catch(() => {
-fallbackExternalCopy(jsonString);
-});
-} else {
-fallbackExternalCopy(jsonString);
-}
+  let copied = false;
+  // HTTPS 크롬 등에서 지원하는 표준 클립보드 API를 먼저 사용합니다.
+  try {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      await navigator.clipboard.writeText(jsonString);
+      copied = true;
+    }
+  } catch (err) {
+    copied = false;
+  }
+
+  // Android WebView 등에서 Clipboard API가 거부되면 사용자 클릭 기반 복사 명령으로 재시도합니다.
+  if (!copied) copied = fallbackExternalCopy(jsonString);
+
+  if (copied) {
+    alert("전체 백업 데이터가 클립보드에 복사되었습니다.\n크롬 백업 페이지에서 [클립보드에서 백업 데이터 불러오기]를 눌러 파일로 저장하세요.");
+    openChromeBrowserExternal();
+  } else {
+    // 복사 권한이 없는 환경에서는 데이터가 복사된 것처럼 안내하지 않습니다.
+    const fallbackBox = document.getElementById("backupManualCopyArea");
+    if (fallbackBox) {
+      fallbackBox.value = jsonString;
+      fallbackBox.style.display = "block";
+      fallbackBox.focus();
+      fallbackBox.select();
+    }
+    alert("자동 복사에 실패했습니다. 아래 백업 데이터 입력란이 표시되면 내용을 직접 복사해 주세요.\n복사 후 크롬 백업 페이지에서 붙여넣으면 됩니다.");
+  }
 }
 
 function fallbackExternalCopy(text) {
-const tempInput = document.createElement("textarea");
-tempInput.value = text;
-document.body.appendChild(tempInput);
-tempInput.select();
-document.execCommand("copy");
-document.body.removeChild(tempInput);
-alert("전체 백업 데이터가 클립보드에 자동 복사되었습니다!\n크롬 브라우저가 열리면 붙여넣기하여 파일을 만드세요.");
-openChromeBrowserExternal();
+  const tempInput = document.createElement("textarea");
+  tempInput.value = text;
+  tempInput.setAttribute("readonly", "");
+  tempInput.style.position = "fixed";
+  tempInput.style.left = "0";
+  tempInput.style.top = "0";
+  tempInput.style.width = "2px";
+  tempInput.style.height = "2px";
+  tempInput.style.padding = "0";
+  tempInput.style.border = "0";
+  tempInput.style.opacity = "0.01";
+  tempInput.style.zIndex = "-1";
+  document.body.appendChild(tempInput);
+  tempInput.focus();
+  tempInput.select();
+  tempInput.setSelectionRange(0, tempInput.value.length);
+  let ok = false;
+  try { ok = document.execCommand("copy") === true; } catch (err) { ok = false; }
+  document.body.removeChild(tempInput);
+  return ok;
 }
 
 function openChromeBrowserExternal() {
