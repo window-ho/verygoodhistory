@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:linear-gradient(135deg,#f0f4f8,#d9e2ec);display:flex;justify-content:center;align-items:center;min-height:100vh;padding:16px;color:#102a43}.card{background:#fff;width:100%;max-width:480px;border-radius:22px;padding:26px 20px;box-shadow:0 12px 30px #102a431a;text-align:center}h1{font-size:21px;margin-bottom:8px}.version{display:inline-block;background:#e8f5e9;color:#2e7d32;font-size:12px;font-weight:bold;padding:5px 12px;border-radius:12px;margin-bottom:14px}.desc{font-size:13px;line-height:1.5;color:#486581;margin-bottom:16px}.section{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-bottom:14px;text-align:left}.section h3{font-size:14px;color:#1b5e20;margin-bottom:9px}textarea{width:100%;height:110px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:11px;resize:vertical;margin-bottom:8px;user-select:text;-webkit-user-select:text}.btn{display:block;width:100%;border:0;border-radius:10px;padding:13px;margin:7px 0;background:#2e7d32;color:white;font-size:14px;font-weight:bold;cursor:pointer}.btn.blue{background:#3f51b5}.btn.dark{background:#455a64}.file{width:100%;padding:8px;background:white;border:1px solid #cbd5e1;border-radius:7px;margin-bottom:8px}.guide{font-size:11.5px;line-height:1.55;color:#627d98;background:#f0f4f8;padding:10px;border-radius:10px}.hidden{display:none!important}#reportPreview{width:100%;height:auto;display:block;border:1px solid #d8dee8;border-radius:8px;margin:10px 0;background:white}#imageStatus{font-size:13px;color:#2e7d32;line-height:1.5;margin:8px 0}.copyright{margin-top:15px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:10px;color:#829ab1;line-height:1.5}
 </style>
-<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=13284"></script>
+<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=13462"></script>
 </head>
 <body>
 <div class="card">
@@ -26,7 +26,10 @@
 </div>
 <div id="backupSection">
 <div class="section"><h3>📥 1단계: 백업 파일(.json) 저장</h3>
-<textarea id="dataArea" placeholder="앱에서 복사된 백업 데이터가 여기에 표시됩니다..."></textarea>
+<p style="font-size:12px;color:#52667a;line-height:1.5;margin-bottom:8px">앱에서 [크롬 브라우저로 백업 열기]를 누른 뒤, 아래 버튼을 눌러 복사된 데이터를 불러오세요.</p>
+<button class="btn blue" onclick="readClipboardBackup(true)">📋 클립보드에서 백업 데이터 불러오기</button>
+<textarea id="dataArea" placeholder="클립보드에서 불러온 백업 데이터가 여기에 표시됩니다. 자동 불러오기가 안 되면 이곳을 길게 눌러 붙여넣으세요."></textarea>
+<div id="backupStatus" style="font-size:12px;line-height:1.5;color:#52667a;margin:4px 0 8px">아직 백업 데이터가 불러와지지 않았습니다.</div>
 <button class="btn" onclick="downloadJsonFile()">💾 백업 파일 다운로드</button></div>
 <div class="section"><h3>📤 2단계: 백업 파일 불러오기</h3>
 <input type="file" id="jsonFileInput" class="file" accept=".json" onchange="loadJsonFile(event)">
@@ -40,7 +43,7 @@ let currentImageData='';
 window.addEventListener('load', async function(){
   const isImageMode = location.hash.includes('report-image');
   if(isImageMode){document.getElementById('imageSection').classList.remove('hidden');document.getElementById('backupSection').classList.add('hidden');await readClipboardImage();}
-  else {await readClipboardBackup();}
+  else { /* 모바일 크롬의 클립보드 권한을 위해 사용자가 버튼을 눌렀을 때 읽습니다. */ }
 });
 async function readClipboardImage(){
   const status=document.getElementById('imageStatus');
@@ -56,8 +59,29 @@ function showImage(data){currentImageData=data;const img=document.getElementById
 function downloadReportPng(){if(!currentImageData){alert('저장할 이미지가 없습니다.');return;}try{const parts=currentImageData.split(',');const raw=atob(parts[1]);const bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);const blob=new Blob([bytes],{type:'image/png'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='농가경제_현장기록표_'+localDate()+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);document.getElementById('imageStatus').textContent='다운로드 요청을 보냈습니다. 크롬의 다운로드 알림 또는 다운로드 폴더를 확인하세요.';}catch(e){alert('이미지 파일 생성에 실패했습니다.');}}
 function openImageAlone(){if(!currentImageData)return;const w=window.open();if(w){w.document.write('<meta name="viewport" content="width=device-width,initial-scale=1"><title>보고서 이미지</title><img src="'+currentImageData+'" style="width:100%;height:auto">');w.document.close();}else{alert('새 화면이 차단되었습니다. PNG 이미지 다운로드 버튼을 이용해 주세요.');}}
 function localDate(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-async function readClipboardBackup(){try{if(navigator.clipboard&&navigator.clipboard.readText){const t=await navigator.clipboard.readText();if(t&&(t.includes('슬기로운업무노트')||t.includes('details')))document.getElementById('dataArea').value=t;}}catch(e){}}
-function downloadJsonFile(){const text=document.getElementById('dataArea').value.trim();if(!text){alert('저장할 데이터가 없습니다. 앱에서 다시 백업 버튼을 눌러주세요.');return;}try{JSON.parse(text);const blob=new Blob([text],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='농가경제_백업데이터_'+localDate()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);alert('백업 파일 다운로드를 요청했습니다.');}catch(e){alert('데이터 형식이 올바르지 않습니다.');}}
+async function readClipboardBackup(showMessage=false){
+  const area=document.getElementById('dataArea');
+  const status=document.getElementById('backupStatus');
+  try{
+    if(!navigator.clipboard || !navigator.clipboard.readText) throw new Error('클립보드 읽기를 지원하지 않는 브라우저입니다.');
+    const t=await navigator.clipboard.readText();
+    if(!t) throw new Error('클립보드가 비어 있습니다. 앱에서 백업 버튼을 다시 눌러주세요.');
+    const parsed=JSON.parse(t);
+    if(!parsed || !parsed.details || !parsed.data) throw new Error('클립보드에 올바른 농가경제 백업 데이터가 없습니다.');
+    area.value=t;
+    status.textContent='백업 데이터 '+t.length.toLocaleString()+'자를 정상적으로 불러왔습니다. 아래 [백업 파일 다운로드]를 누르세요.';
+    status.style.color='#2e7d32';
+    return true;
+  }catch(e){
+    if(showMessage){
+      status.textContent='자동 불러오기에 실패했습니다. 앱에서 백업 버튼을 다시 누르거나, 입력란을 길게 눌러 [붙여넣기]를 선택하세요. ('+e.message+')';
+      status.style.color='#b45309';
+      alert('클립보드에서 백업 데이터를 불러오지 못했습니다.\n앱에서 백업 버튼을 다시 누른 뒤 재시도하거나, 아래 입력란을 길게 눌러 붙여넣어 주세요.');
+    }
+    return false;
+  }
+}
+function downloadJsonFile(){const text=document.getElementById('dataArea').value.trim();if(!text){alert('저장할 데이터가 없습니다. 먼저 [클립보드에서 백업 데이터 불러오기]를 누르거나 입력란에 백업 데이터를 붙여넣으세요.');return;}try{const parsed=JSON.parse(text);if(!parsed || !parsed.details || !parsed.data) throw new Error('백업 구조 오류');const blob=new Blob([text],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='농가경제_백업데이터_'+localDate()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);alert('백업 파일 다운로드를 요청했습니다.');}catch(e){alert('데이터 형식이 올바르지 않습니다.');}}
 function loadJsonFile(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{document.getElementById('dataArea').value=e.target.result;alert('백업 파일을 불러왔습니다. [복원용 텍스트 복사하기]를 누르세요.');};reader.readAsText(file);}
 function copyForRestore(){const t=document.getElementById('dataArea');t.select();try{document.execCommand('copy');alert('복원용 텍스트가 복사되었습니다. 앱의 백업 창에 붙여넣으세요.');}catch(e){alert('텍스트를 전체 선택해 수동으로 복사해 주세요.');}}
 </script>
