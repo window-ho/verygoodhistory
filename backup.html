@@ -1,141 +1,27 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex,nofollow">
-<title>슬기로운업무노트 - 데이터 백업 및 복원</title>
-<style>
-*{box-sizing:border-box}body{margin:0;padding:16px;background:linear-gradient(135deg,#f0f4f8,#d9e2ec);font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;color:#243b53;min-height:100vh;display:flex;justify-content:center;align-items:center}.card{background:#fff;width:100%;max-width:500px;padding:24px 18px;border-radius:20px;box-shadow:0 12px 30px #102a431a}h1{text-align:center;font-size:21px;margin:0 0 8px}.sub{text-align:center;color:#627d98;font-size:13px;line-height:1.5;margin:0 0 18px}.panel{padding:14px;background:#f8fafc;border:1px solid #d9e2ec;border-radius:13px;margin:12px 0}h2{font-size:15px;margin:0 0 8px;color:#4a148c}.hint{font-size:12px;line-height:1.55;color:#52667a;margin:6px 0 10px}textarea{display:block;width:100%;min-height:145px;padding:11px;border:1px solid #bcccdc;border-radius:9px;font-size:11px;line-height:1.4;resize:vertical;background:#fff;color:#102a43;user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}.btn{display:block;width:100%;border:0;border-radius:9px;padding:13px 10px;margin:8px 0;background:#6a1b9a;color:#fff;font-size:14px;font-weight:700}.btn.blue{background:#3949ab}.btn.green{background:#2e7d32}.btn.gray{background:#546e7a}.btn:disabled{opacity:.45}.status{font-size:12px;line-height:1.5;margin:8px 0;color:#52667a;overflow-wrap:anywhere}.file{width:100%;padding:9px;border:1px solid #bcccdc;border-radius:8px;background:white}.guide{background:#f0f4f8;border-radius:10px;padding:11px;font-size:11px;line-height:1.6;color:#627d98;margin-top:14px}.footer{text-align:center;font-size:10px;color:#829ab1;border-top:1px solid #e2e8f0;margin-top:15px;padding-top:12px}
-</style>
-</head>
-<body>
-<main class="card">
-<h1>슬기로운업무노트(농가경제)</h1><p class="sub">데이터 백업 및 복원 전용 페이지</p>
-<section class="panel">
-<h2>📥 1. 백업 파일 저장</h2>
-<p class="hint">앱에서 <strong>데이터 백업 및 복원</strong>을 누르면 데이터가 자동으로 입력됩니다.</p>
-<button class="btn blue" onclick="readClipboardBackup()">📋 클립보드에서 백업 데이터 불러오기</button>
-<textarea id="dataArea" placeholder="클립보드 불러오기가 안 되면 여기를 길게 눌러 [붙여넣기]를 선택하세요."></textarea>
-<button class="btn gray" onclick="validatePastedBackup()">붙여넣은 백업 데이터 확인</button>
-<div id="backupStatus" class="status">아직 백업 데이터가 확인되지 않았습니다.</div>
-<button class="btn green" id="downloadBtn" onclick="downloadJsonFile()" disabled>💾 백업 JSON 파일 다운로드</button>
-</section>
+<!-- 데이터 백업 및 복원 모달 부분 -->
+<div class="modal-overlay" id="backupModal">
+<div class="modal-content">
+<h3 style="margin-bottom:10px; color:#7b1fa2;">💾 데이터 백업 및 복원</h3>
+<p style="font-size:0.82rem; color:#555; line-height:1.4; margin-bottom:12px;">
+아래 백업 데이터가 자동으로 입력됩니다. 복사가 안 될 경우 입력란을 길게 눌러 복사하세요.
+</p>
 
-<section class="panel">
-<h2>📤 2. 백업 파일 확인 및 복원 준비</h2>
-<p class="hint">기존에 저장한 JSON 백업 파일을 불러오면 내용을 확인할 수 있습니다.</p>
-<input id="jsonFileInput" class="file" type="file" accept=".json,application/json" onchange="loadJsonFile(event)">
-<button class="btn blue" onclick="copyForRestore()">📋 복원용 텍스트 복사</button>
-<div id="restoreStatus" class="status"></div>
-</section>
+<div style="background:#f3e5f5; padding:10px; border-radius:6px; margin-bottom:12px;">
+<strong style="font-size:0.9rem; color:#4a148c;">1단계: 백업 데이터 복사 및 사이트 열기</strong>
+<textarea id="backupManualCopyArea" aria-label="백업 데이터 복사" placeholder="백업 데이터가 여기에 표시됩니다. 길게 눌러 [전체 선택] 후 [복사]하세요." style="display:block; width:100%; height:110px; margin-top:8px; margin-bottom:8px; font-size:10px; background:#fff; -webkit-user-select:text !important; user-select:text !important; -webkit-touch-callout:default !important; padding:8px; border:1px solid #bcccdc; border-radius:6px;"></textarea>
+<button class="btn btn-backup" style="width:100%; margin-bottom:6px;" onclick="copyBackupTextManual()">📋 백업 데이터 복사하기</button>
+<button class="btn btn-backup" style="width:100%; background:#4a148c;" onclick="openBackupSiteExternal()">🌐 백업 사이트 열기 (크롬)</button>
+<button class="btn btn-restore" style="width:100%; margin-top:8px;" onclick="downloadBackupJsonDirect()">💾 백업 파일 바로 저장하기</button>
+</div>
 
-<div class="guide"><b>이용 안내</b><br>• 백업 파일은 다운로드 폴더에 저장됩니다.<br>• 이전 이미지 데이터가 클립보드에 남아있다면 무시되므로 안심하고 사용하세요.</div>
-<div class="footer">© 2026 슬기로운업무노트(농가경제) · windowho@korea.kr</div>
-</main>
+<div style="background:#e8eaf6; padding:10px; border-radius:6px; margin-bottom:12px;">
+<strong style="font-size:0.9rem; color:#1a237e;">2단계: 앱 내 백업 파일 복원하기</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">저장해 둔 백업 파일(.json)을 선택하면 곧바로 복원됩니다.</p>
+<input type="file" id="appRestoreFileInput" accept=".json" onchange="restoreAppFromJsonFile(event)" style="font-size:0.85rem; background:#fff; padding:6px; width:100%; border:1px solid #cbd5e1; border-radius:4px;">
+</div>
 
-<script>
-function parseBackup(text){
-  const obj=JSON.parse(text);
-  if(!obj||!obj.details||!obj.data||typeof obj.details!=='object'||typeof obj.data!=='object')throw new Error('농가경제 백업 형식이 아닙니다.');
-  return obj;
-}
-
-function setStatus(message,ok){
-  const el=document.getElementById('backupStatus');
-  el.textContent=message;
-  el.style.color=ok?'#2e7d32':'#b45309';
-  document.getElementById('downloadBtn').disabled=!ok;
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  readClipboardBackup();
-});
-
-async function readClipboardBackup(){
-  const area=document.getElementById('dataArea');
-  setStatus('클립보드 데이터를 확인하고 있습니다...',false);
-  try{
-    if(!navigator.clipboard || !navigator.clipboard.readText) throw new Error('지원되지 않음');
-    const value=await navigator.clipboard.readText();
-    
-    // 핵심 방어 코드: 이미지 데이터가 클립보드에 남아있으면 백업 데이터로 취급하지 않고 차단
-    if(!value || value.startsWith('data:image/')) {
-      setStatus('이전에 복사된 이미지 데이터가 감지되었습니다. 앱에서 다시 [백업 사이트 열기]를 눌러주세요.', false);
-      return;
-    }
-
-    parseBackup(value);
-    area.value=value;
-    setStatus('백업 데이터 '+value.length.toLocaleString()+'자를 확인했습니다. [백업 JSON 파일 다운로드]를 누르세요.',true);
-  }catch(e){
-    setStatus('클립보드에서 백업 데이터를 자동 불러오지 못했습니다. 앱에서 다시 백업을 누르거나 아래 칸에 직접 붙여넣어 주세요.',false);
-  }
-}
-
-function validatePastedBackup(){
-  const value=document.getElementById('dataArea').value.trim();
-  try{
-    parseBackup(value);
-    setStatus('붙여넣은 백업 데이터가 정상입니다. JSON 파일로 저장할 수 있습니다.',true);
-  }catch(e){
-    setStatus('백업 데이터 확인 실패: '+e.message,false);
-  }
-}
-
-function downloadJsonFile(){
-  const value=document.getElementById('dataArea').value.trim();
-  try{
-    parseBackup(value);
-    const blob=new Blob([value],{type:'application/json;charset=utf-8'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='농가경제_백업데이터_'+localDate()+'.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),60000);
-    setStatus('백업 파일 다운로드를 요청했습니다. 다운로드 폴더를 확인하세요.',true);
-  }catch(e){
-    setStatus('저장할 수 없습니다: '+e.message,false);
-  }
-}
-
-function loadJsonFile(event){
-  const file=event.target.files&&event.target.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=()=>{
-    document.getElementById('dataArea').value=String(reader.result||'');
-    try{
-      parseBackup(document.getElementById('dataArea').value);
-      setStatus('JSON 백업 파일을 정상적으로 불러왔습니다.',true);
-      document.getElementById('restoreStatus').textContent='앱에서 이 파일을 직접 선택해 복원하세요.';
-    }catch(e){
-      setStatus('파일 형식 확인 실패: '+e.message,false);
-    }
-  };
-  reader.readAsText(file);
-}
-
-function copyForRestore(){
-  const area=document.getElementById('dataArea');
-  try{
-    area.focus();
-    area.select();
-    area.setSelectionRange(0,area.value.length);
-    const ok=document.execCommand('copy');
-    document.getElementById('restoreStatus').textContent=ok?'복원용 텍스트를 클립보드에 복사했습니다.':'복사가 차단되었습니다.';
-  }catch(e){
-    document.getElementById('restoreStatus').textContent='입력란을 길게 눌러 직접 복사하세요.';
-  }
-}
-
-function localDate(){
-  const d=new Date();
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-</script>
-</body>
-</html>
+<div class="btn-group">
+<button class="btn btn-danger" onclick="closeBackupModal()">닫기</button>
+</div>
+</div>
+</div>
