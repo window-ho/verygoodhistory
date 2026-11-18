@@ -1,93 +1,287 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>슬기로운업무노트 - 데이터 백업 및 파일 변환기</title>
-<style>
-:root { --primary: #7b1fa2; --bg: #f4f6f8; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; }
-.container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: center; }
-h2 { color: var(--primary); margin-bottom: 10px; }
-p { font-size: 0.9rem; color: #555; line-height: 1.4; margin-bottom: 15px; }
-textarea { width: 100%; height: 180px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.8rem; margin-bottom: 15px; box-sizing: border-box; }
-.btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; }
-.btn:hover { background: #4a148c; }
-.btn-restore { background: #3f51b5; }
-.btn-restore:hover { background: #1a237e; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 검색엔진 노출 완벽 차단 -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>슬기로운업무노트(농가경제) - 데이터 백업 및 복원 센터</title>
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-user-select: none; 
+      -moz-user-select: none;    
+      -ms-user-select: none;     
+      user-select: none;         
+    }
+    body {
+      font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: #102a43;
+    }
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 24px;
+      padding: 36px 26px;
+      box-shadow: 0 12px 30px rgba(16, 42, 67, 0.1);
+      text-align: center;
+    }
+    /* 파란색 배경 + 흰색 둥근 박스 안 아이콘 */
+    .app-icon {
+      width: 72px;
+      height: 72px;
+      background: #2e7d32;
+      border-radius: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 18px;
+      box-shadow: 0 6px 15px rgba(46, 125, 50, 0.3);
+    }
+    .icon-inner-box {
+      width: 44px;
+      height: 44px;
+      background: #ffffff;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 8px;
+      color: #102a43;
+      letter-spacing: -0.5px;
+    }
+    .version {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .desc {
+      font-size: 14.5px;
+      font-weight: bold;
+      line-height: 1.4;
+      color: #102a43;
+      margin-bottom: 8px;
+      word-break: keep-all;
+    }
+    .sub-desc {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #486581;
+      margin-bottom: 20px;
+      word-break: keep-all;
+    }
+    .section-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 14px;
+      text-align: left;
+      margin-bottom: 16px;
+    }
+    .section-box h3 {
+      font-size: 13.5px;
+      color: #1b5e20;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    textarea {
+      width: 100%;
+      height: 110px;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      resize: none;
+      margin-bottom: 8px;
+      background: #fff;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    .action-btn {
+      display: block;
+      width: 100%;
+      background: #2e7d32;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: bold;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
+      margin-bottom: 6px;
+    }
+    .action-btn:active {
+      transform: scale(0.98);
+      background: #1b5e20;
+    }
+    .btn-restore {
+      background: #3f51b5;
+      box-shadow: 0 4px 12px rgba(63, 81, 181, 0.25);
+    }
+    .btn-restore:active {
+      background: #1a237e;
+    }
+    .file-input {
+      width: 100%;
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      padding: 6px;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+    }
+    .guide {
+      margin-top: 12px;
+      font-size: 11.5px;
+      color: #627d98;
+      line-height: 1.5;
+      background: #f0f4f8;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: left;
+      word-break: keep-all;
+    }
+    .copyright {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #829ab1;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 12px;
+      line-height: 1.4;
+    }
+  </style>
 </head>
-<body>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 
-<div class="container">
-<h2>💾 슬기로운업무노트 데이터 백업 센터</h2>
-<p>앱에서 복사되어 넘어온 데이터를 확인하고 안전한 파일(.json)로 저장하거나, 파일 내용을 복사해서 앱으로 되돌릴 수 있습니다.</p>
+  <div class="card">
+    <!-- 농가 경제 아이콘 -->
+    <div class="app-icon">
+      <div class="icon-inner-box">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#2e7d32" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" />
+          <path d="M2 17L12 22L22 17" />
+          <path d="M2 12L12 17L22 12" />
+        </svg>
+      </div>
+    </div>
 
-<div style="text-align:left; margin-bottom:5px;"><strong>1. 파일로 안전하게 저장하기 (다운로드)</strong></div>
-<textarea id="dataArea" placeholder="데이터가 자동으로 여기에 입력됩니다..."></textarea>
-<button class="btn" onclick="downloadJsonFile()">📥 백업 파일(.json)로 다운로드</button>
+    <h1>슬기로운업무노트(농가경제)</h1>
+    <span class="version">데이터 백업 및 파일 센터</span>
+    
+    <p class="desc">
+      안전한 데이터 파일 변환 및 복원 솔루션
+    </p>
+    <p class="sub-desc">
+      앱에서 넘어온 데이터를 크롬 브라우저를 통해 안전한 JSON 파일로 다운로드하거나, 백업 파일을 불러와 앱으로 전달할 수 있습니다.
+    </p>
 
-<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+    <!-- 1단계: 백업 다운로드 -->
+    <div class="section-box">
+      <h3>📥 1단계: 백업 파일(.json) 저장하기</h3>
+      <textarea id="dataArea" placeholder="앱에서 전달된 데이터가 여기에 표시됩니다..."></textarea>
+      <button class="action-btn" onclick="downloadJsonFile()">💾 백업 파일 다운로드</button>
+    </div>
 
-<div style="text-align:left; margin-bottom:5px;"><strong>2. 앱으로 데이터 복원하기</strong></div>
-<p style="font-size:0.8rem; text-align:left;">저장해 둔 백업 파일을 선택하면 텍스트로 변환됩니다.</p>
-<input type="file" id="jsonFileInput" accept=".json" onchange="loadJsonFile(event)" style="margin-bottom:10px; width:100%; font-size:0.9rem;">
-<button class="btn btn-restore" onclick="copyForRestore()">📋 복원용 텍스트 복사하기</button>
-</div>
+    <!-- 2단계: 복원하기 -->
+    <div class="section-box" style="margin-bottom: 12px;">
+      <h3>📤 2단계: 백업 파일 불러와서 복원하기</h3>
+      <input type="file" id="jsonFileInput" class="file-input" accept=".json" onchange="loadJsonFile(event)">
+      <button class="action-btn btn-restore" onclick="copyForRestore()">📋 복원용 텍스트 복사하기</button>
+    </div>
 
-<script>
-window.onload = function() {
-// 클립보드에 내용이 있거나 파라미터로 넘어온 경우 자동 입력 시도
-navigator.clipboard.readText().then(text => {
-if(text && text.includes("슬기로운업무노트")) {
-document.getElementById('dataArea').value = text;
-}
-}).catch(err => {});
-};
+    <div class="guide">
+      <strong>💡 이용 안내</strong><br>
+      • <b>파일 다운로드:</b> 상자 안의 내용을 확인 후 버튼을 누르면 크롬 브라우저를 통해 `.json` 파일로 즉시 저장됩니다.<br>
+      • <b>데이터 복원:</b> 저장해 둔 파일을 불러온 뒤 <b>[복원용 텍스트 복사하기]</b>를 눌러 앱의 백업 창에 붙여넣으세요.
+    </div>
 
-function downloadJsonFile() {
-const text = document.getElementById('dataArea').value.trim();
-if (!text) {
-alert("저장할 데이터가 없습니다. 앱에서 다시 백업 버튼을 눌러주세요.");
-return;
-}
-try {
-JSON.parse(text); // 유효성 검증
-const blob = new Blob([text], { type: "application/json;charset=utf-8" });
-const url = URL.createObjectURL(blob);
-const a = document.createElement('a');
-a.href = url;
-a.download = `농가경제_백업데이터_${new Date().toISOString().slice(0,10)}.json`;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
-} catch (e) {
-alert("데이터 형식이 올바르지 않습니다.");
-}
-}
+    <!-- 저작권 및 이메일 표기 -->
+    <div class="copyright">
+      © 2026 슬기로운업무노트(농가경제). All rights reserved.<br>
+      Contact: windowho@korea.kr
+    </div>
+  </div>
 
-function loadJsonFile(event) {
-const file = event.target.files[0];
-if (!file) return;
-const reader = new FileReader();
-reader.onload = function(e) {
-document.getElementById('dataArea').value = e.target.result;
-alert("파일을 불러왔습니다! 아래 [복원용 텍스트 복사하기]를 눌러 앱에 붙여넣으세요.");
-};
-reader.readAsText(file);
-}
+  <script>
+    // 페이지 로드 시 클립보드 또는 전달된 데이터 자동 입력 시도
+    window.onload = function() {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        navigator.clipboard.readText().then(text => {
+          if (text && (text.includes("슬기로운업무노트") || text.includes("details"))) {
+            document.getElementById('dataArea').value = text;
+          }
+        }).catch(err => {});
+      }
+    };
 
-function copyForRestore() {
-const textarea = document.getElementById('dataArea');
-textarea.select();
-try {
-document.execCommand('copy');
-alert("복원용 텍스트가 복사되었습니다!\n앱의 [데이터 백업 및 복원] 창에 붙여넣고 복원하세요.");
-} catch (e) {
-alert("직접 전체 선택하여 복사해 주세요.");
-}
-}
-</script>
+    function downloadJsonFile() {
+      const text = document.getElementById('dataArea').value.trim();
+      if (!text) {
+        alert("저장할 데이터가 없습니다. 앱에서 다시 백업 버튼을 눌러주세요.");
+        return;
+      }
+      try {
+        JSON.parse(text); // 유효성 검증
+        const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `농가경제_백업데이터_${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert("백업 파일이 성공적으로 다운로드되었습니다!");
+      } catch (e) {
+        alert("데이터 형식이 올바르지 않습니다.");
+      }
+    }
+
+    function loadJsonFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('dataArea').value = e.target.result;
+        alert("백업 파일을 정상적으로 불러왔습니다!\n[복원용 텍스트 복사하기] 버튼을 누른 후 앱에 붙여넣으세요.");
+      };
+      reader.readAsText(file);
+    }
+
+    function copyForRestore() {
+      const textarea = document.getElementById('dataArea');
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        alert("복원용 텍스트가 복사되었습니다!\n앱의 [데이터 백업 및 복원] 메뉴로 돌아가 붙여넣고 복원하세요.");
+      } catch (e) {
+        alert("텍스트 상자 안의 내용을 수동으로 전체 선택 후 복사해 주세요.");
+      }
+    }
+
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+  </script>
+
 </body>
 </html>
