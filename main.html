@@ -614,12 +614,14 @@ line-height: 1.4;
 <div class="modal-overlay" id="reportImageModal">
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
-<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">아래 이미지를 <strong>길게 눌러 [이미지 저장]</strong>을 선택하세요.</p>
-<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:55vh; overflow-y:auto; background:#f9f9f9;">
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
+앱 멈춤 현상을 방지하기 위해 <strong>[크롬 브라우저로 열기]</strong>를 누르면 크롬에서 안전하게 저장할 수 있습니다. 이미지를 길게 눌러 저장할 수도 있습니다.
+</p>
+<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:50vh; overflow-y:auto; background:#f9f9f9;">
 <img id="generatedReportImg" style="width:100%; height:auto; display:block;" alt="보고서 이미지">
 </div>
 <div class="btn-group">
-<button class="btn btn-print" id="btnDownloadReportImg">💾 파일 다운로드 재시도</button>
+<button class="btn btn-print" id="btnOpenInChromeImg" style="background:#4caf50;">🌐 크롬 브라우저로 열어 저장</button>
 <button class="btn btn-danger" onclick="closeReportImageModal()">닫기</button>
 </div>
 </div>
@@ -628,17 +630,22 @@ line-height: 1.4;
 <div class="modal-overlay" id="backupModal">
 <div class="modal-content">
 <h3 style="margin-bottom:10px; color:#7b1fa2;">💾 데이터 백업 및 복원</h3>
+<p style="font-size:0.82rem; color:#555; line-height:1.4; margin-bottom:12px;">
+크롬 브라우저를 통해 안전하게 JSON 파일로 저장하거나 파일을 불러와 복원할 수 있습니다.
+</p>
 <div style="background:#f3e5f5; padding:10px; border-radius:6px; margin-bottom:15px;">
-<strong style="font-size:0.9rem; color:#4a148c;">1단계: 데이터 백업 (복사하기)</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 8px 0;">아래 버튼을 눌러 백업 텍스트를 복사하세요.</p>
-<button class="btn btn-backup" style="width:100%; margin-bottom:8px;" onclick="copyBackupDataToClipboard()">📋 백업 데이터 클립보드 복사</button>
-<textarea id="exportDataTextarea" rows="3" placeholder="백업 코드가 여기에 표시됩니다..." style="font-size:0.75rem; background:#fff;" readonly onclick="this.select()"></textarea>
+<strong style="font-size:0.9rem; color:#4a148c;">1단계: 파일로 백업하기 (다운로드)</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 8px 0;">버튼을 누르면 크롬 창이 열리며 백업 파일(.json)이 저장됩니다.</p>
+<button class="btn btn-backup" style="width:100%; margin-bottom:8px;" onclick="downloadBackupJsonFile()">🌐 크롬으로 백업 파일 저장하기</button>
+<button class="btn" style="background:#673ab7; color:white; width:100%; font-size:0.8rem;" onclick="copyBackupDataToClipboard()">📋 텍스트로 복사해두기</button>
+<textarea id="exportDataTextarea" rows="2" placeholder="복사용 텍스트..." style="font-size:0.75rem; background:#fff; margin-top:6px;" readonly onclick="this.select()"></textarea>
 </div>
 <div style="background:#e8eaf6; padding:10px; border-radius:6px; margin-bottom:12px;">
-<strong style="font-size:0.9rem; color:#1a237e;">2단계: 데이터 복원 (붙여넣기)</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">백업 텍스트를 아래 칸에 붙여넣고 복원 버튼을 누르세요.</p>
-<textarea id="restoreDataTextarea" rows="3" placeholder="백업 텍스트를 여기에 붙여넣으세요..." style="font-size:0.75rem; margin-bottom:8px;"></textarea>
-<button class="btn btn-restore" style="width:100%;" onclick="restoreFromTextarea()">📥 붙여넣은 데이터로 복원하기</button>
+<strong style="font-size:0.9rem; color:#1a237e;">2단계: 백업 파일 불러와서 복원하기</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">저장해 둔 JSON 파일을 선택하거나 아래 칸에 붙여넣으세요.</p>
+<input type="file" id="restoreFileChọn" accept=".json" onchange="loadBackupFile(event)" style="font-size:0.8rem; margin-bottom:8px; background:#fff; padding:6px;">
+<textarea id="restoreDataTextarea" rows="2" placeholder="또는 백업 텍스트를 여기에 붙여넣으세요..." style="font-size:0.75rem; margin-bottom:8px;"></textarea>
+<button class="btn btn-restore" style="width:100%;" onclick="restoreFromTextarea()">📥 붙여넣은 텍스트로 복원하기</button>
 </div>
 <div class="btn-group">
 <button class="btn btn-danger" onclick="closeBackupModal()">닫기</button>
@@ -704,12 +711,13 @@ line-height: 1.4;
 
 <div class="modal-overlay" id="photoViewModal">
 <div class="modal-content" style="text-align:center;">
-<h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 측정 사진 크게 보기</h3>
-<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">사진을 <strong>길게 눌러 앨범에 저장</strong>할 수 있습니다.</p>
+<h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 측정 사진 크롬 저장</h3>
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">크롬 브라우저로 열거나 길게 눌러 저장할 수 있습니다.</p>
 <div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; background:#000;">
 <img id="modalFullPhotoImg" style="width:100%; height:auto; display:block;" alt="측정사진">
 </div>
 <div class="btn-group">
+<button class="btn btn-print" id="btnOpenPhotoChrome" style="background:#4caf50;">🌐 크롬에서 열기</button>
 <button class="btn btn-danger" onclick="closePhotoViewModal()">닫기</button>
 </div>
 </div>
@@ -722,17 +730,17 @@ line-height: 1.4;
 <p><strong>1. 농가 관리 및 조회 기간</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
 <li>상단에서 조사할 농가를 선택하거나 <strong>[+ 새 농가]</strong>를 등록하세요.</li>
-<li>조회 기간은 기본적으로 <strong>당월(이번 달)</strong>이 우선 표시되며, 연도/월 필터를 변경하여 원하는 기간을 조회할 수 있습니다.</li>
+<li>조회 기간은 기본적으로 <strong>당월(이번 달)</strong>이 우선 표시되며, 연도/월 필터를 변경하여 조회할 수 있습니다.</li>
 </ul>
 <p><strong>2. 주요 입력 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
-<li><strong>작물/파종, 농작물수입, 수입표, 지출표, 작업시간, 조세:</strong> 각 탭에서 영농 활동 및 수지 내역을 체계적으로 입력하고 관리합니다.</li>
+<li><strong>작물/파종, 농작물수입, 수입표, 지출표, 작업시간, 조세:</strong> 영농 활동 및 수지 내역을 체계적으로 입력합니다.</li>
 </ul>
 <p><strong>3. 특화 부가 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
-<li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 길게 눌러 앨범에 저장할 수 있습니다.</li>
-<li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표를 이미지로 변환하여 팝업창으로 띄워줍니다.</li>
-<li><strong>💾 데이터 백업 및 복원:</strong> 텍스트 상자를 통해 안전하게 백업하고 복원할 수 있습니다.</li>
+<li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 크롬 브라우저를 통해 안전하게 저장할 수 있습니다.</li>
+<li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표를 이미지로 변환하여 크롬 브라우저로 열어 저장할 수 있습니다.</li>
+<li><strong>💾 데이터 백업 및 복원:</strong> 크롬을 통해 JSON 파일로 안전하게 백업하고 복원할 수 있습니다.</li>
 </ul>
 </div>
 <div class="btn-group" style="margin-top:15px;">
@@ -762,12 +770,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.43</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.44</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.43";
+const APP_VERSION = "v1.0.44";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
 let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
@@ -1007,21 +1015,50 @@ function closeBackupModal() {
 document.getElementById('backupModal').style.display = 'none';
 }
 
+/* 크롬 브라우저를 통한 JSON 백업 파일 다운로드 연결 */
+function downloadBackupJsonFile() {
+const backupObj = {
+app: "슬기로운업무노트(농가경제)",
+version: APP_VERSION,
+exportedAt: new Date().toISOString(),
+details: farmDetails,
+data: allFarmData
+};
+const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj, null, 2));
+const downloadAnchor = document.createElement('a');
+downloadAnchor.setAttribute("href", dataStr);
+downloadAnchor.setAttribute("download", `농가경제_백업데이터_${new Date().toISOString().slice(0,10)}.json`);
+document.body.appendChild(downloadAnchor);
+downloadAnchor.click();
+downloadAnchor.remove();
+}
+
 function copyBackupDataToClipboard() {
 const textarea = document.getElementById('exportDataTextarea');
 textarea.select();
 try {
 document.execCommand('copy');
-alert("백업 코드가 복사되었습니다! 안전한 곳에 붙여넣어 보관하세요.");
+alert("백업 코드가 클립보드에 복사되었습니다!");
 } catch (e) {
-alert("자동 복사가 지원되지 않는 기기입니다. 상자 안의 텍스트를 직접 전체 선택하여 복사해 주세요.");
+alert("텍스트 상자 안의 내용을 수동으로 복사해 주세요.");
 }
+}
+
+function loadBackupFile(event) {
+const file = event.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = function(e) {
+document.getElementById('restoreDataTextarea').value = e.target.result;
+alert("파일을 성공적으로 불러왔습니다! 아래 [붙여넣은 텍스트로 복원하기] 버튼을 누르세요.");
+};
+reader.readAsText(file);
 }
 
 function restoreFromTextarea() {
 const rawText = document.getElementById('restoreDataTextarea').value.trim();
 if (!rawText) {
-alert("복원할 텍스트를 붙여넣어 주세요.");
+alert("복원할 텍스트나 파일을 먼저 지정해 주세요.");
 return;
 }
 try {
@@ -1037,10 +1074,10 @@ closeBackupModal();
 alert("데이터가 성공적으로 복원되었습니다!");
 }
 } else {
-alert("올바른 백업 데이터가 아닙니다.");
+alert("올바른 백업 데이터 형식이 아닙니다.");
 }
 } catch (err) {
-alert("데이터 형식이 올바르지 않습니다. 복사한 텍스트 전체를 정확히 붙여넣어 주세요.");
+alert("데이터 형식이 올바르지 않습니다.");
 }
 }
 
@@ -1236,6 +1273,9 @@ renderTable();
 closeMeasureModal();
 
 document.getElementById('modalFullPhotoImg').src = dataURL;
+document.getElementById('btnOpenPhotoChrome').onclick = function() {
+window.open(dataURL, '_blank');
+};
 document.getElementById('photoViewModal').style.display = 'flex';
 } catch (e) {
 console.error(e);
@@ -1246,6 +1286,9 @@ alert('사진 캡처 중 오류가 발생했습니다.');
 function openPhotoViewModal(url) {
 if (url) {
 document.getElementById('modalFullPhotoImg').src = url;
+document.getElementById('btnOpenPhotoChrome').onclick = function() {
+window.open(url, '_blank');
+};
 }
 document.getElementById('photoViewModal').style.display = 'flex';
 }
@@ -1269,19 +1312,8 @@ const imageURL = canvas.toDataURL('image/png');
 const imgEl = document.getElementById('generatedReportImg');
 imgEl.src = imageURL;
 
-const fileName = `농가경제_기록표_${farmDetails[currentFarmId].alias}_${new Date().toISOString().slice(0,10)}.png`;
-
-document.getElementById('btnDownloadReportImg').onclick = function() {
-try {
-const a = document.createElement('a');
-a.href = imageURL;
-a.download = fileName;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-} catch (e) {
-alert("이 기기에서는 직접 다운로드가 차단되므로 이미지를 길게 눌러 저장해 주세요.");
-}
+document.getElementById('btnOpenInChromeImg').onclick = function() {
+window.open(imageURL, '_blank');
 };
 
 document.getElementById('reportImageModal').style.display = 'flex';
