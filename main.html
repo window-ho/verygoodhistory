@@ -647,7 +647,7 @@ line-height: 1.4;
 <div class="measure-modal-content">
 <h3 style="margin-bottom:8px; color:#00ffcc; text-align:center; font-size:1rem;">AR 카메라 거리 측정기</h3>
 <div class="viewfinder" id="measureViewfinder">
-<video id="measureCameraStream" autoplay playsinline></video>
+<video id="measureCameraStream" autoplay playsinline muted></video>
 <div class="crosshair"></div>
 </div>
 <div class="form-group" style="margin-bottom: 8px;">
@@ -718,12 +718,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.38</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.39</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.38";
+const APP_VERSION = "v1.0.39";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
 let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
@@ -1012,7 +1012,7 @@ closeCanvasModal();
 alert('손글씨 메모가 자동 저장 및 백업되었습니다.');
 }
 
-/* 카메라 거리 측정 및 캡처 관련 함수 */
+/* 카메라 거리 측정 및 강제 재생 수정 함수 */
 const measureVideo = document.getElementById('measureCameraStream');
 const measurePhoneHeightInput = document.getElementById('measurePhoneHeight');
 const measureDistanceResult = document.getElementById('measureDistanceResult');
@@ -1022,20 +1022,24 @@ let lastCalculatedDistance = 0;
 
 async function initMeasureCamera() {
 try {
-const stream = await navigator.mediaDevices.getUserMedia({
+const constraints = {
 video: { facingMode: { exact: "environment" } },
 audio: false
-});
+};
+let stream;
+try {
+stream = await navigator.mediaDevices.getUserMedia(constraints);
+} catch (e) {
+// 후면 카메라 제약으로 안 될 경우 기본 카메라로 재시도
+stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+}
 measureVideo.srcObject = stream;
+// 강제 재생 명령 추가 (플레이어 아이콘 방지)
+await measureVideo.play();
 measureSensorStatus.innerText = "카메라 연결 완료 (센서 대기 중)";
 } catch (err) {
-try {
-const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-measureVideo.srcObject = stream;
-measureSensorStatus.innerText = "카메라 연결 완료 (기본 카메라)";
-} catch (e) {
+console.error(err);
 measureSensorStatus.innerText = "오류: 카메라 권한이 거부되었거나 지원하지 않습니다.";
-}
 }
 }
 
@@ -1078,6 +1082,7 @@ function closeMeasureModal() {
 document.getElementById('measureModal').style.display = 'none';
 if (measureVideo.srcObject) {
 measureVideo.srcObject.getTracks().forEach(track => track.stop());
+measureVideo.srcObject = null;
 }
 }
 
