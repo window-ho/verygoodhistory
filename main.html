@@ -310,7 +310,6 @@ cursor: crosshair;
 border-radius: 4px;
 }
 
-/* AR 카메라 거리 측정 모달 스타일 */
 .measure-modal-content {
 background: #121212;
 color: #ffffff;
@@ -405,7 +404,7 @@ line-height: 1.4;
 </div>
 </header>
 
-<!-- 농가 선택 및 정렬 옵션 -->
+<!-- 농가 선택 및 정렬 -->
 <div class="farm-selector-box">
 <div class="farm-selector-row">
 <label for="farmSelect">조사 농가 선택:</label>
@@ -426,7 +425,7 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 연도/월 필터 (당월 자동 기본 설정) -->
+<!-- 연도/월 필터 -->
 <div class="farm-selector-box" style="background:#fff3e0; border-color:#ff9800;">
 <div class="farm-selector-row">
 <label>조회 기간:</label>
@@ -584,7 +583,7 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 데이터 테이블 및 버튼 (초기화 버튼 제거 완료) -->
+<!-- 데이터 테이블 및 하단 버튼 -->
 <div class="card">
 <div id="captureTargetArea" style="background: #ffffff; padding: 8px; border-radius: 6px;">
 <h3>[<span id="printFarmTitle">농가01</span>] 현장 기록표 (클릭 시 수정)</h3>
@@ -607,15 +606,15 @@ line-height: 1.4;
 
 <div class="btn-group" style="margin-top:12px;">
 <button class="btn btn-print" onclick="captureAndShowReportImage()">📷 보고서 이미지 저장</button>
-<button class="btn btn-backup" onclick="openBackupModal()">💾 백업 및 복원</button>
+<button class="btn btn-backup" onclick="openBackupModal()">💾 데이터 백업 및 복원</button>
 </div>
 </div>
 
-<!-- 보고서 이미지 저장/미리보기 모달 (웹뷰 멈춤 현상 완벽 해결) -->
+<!-- 모달 창들 -->
 <div class="modal-overlay" id="reportImageModal">
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
-<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">아래 이미지를 <strong>길게 눌러 [이미지 다운로드]</strong> 또는 <strong>[이미지 저장]</strong>을 선택하세요.</p>
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">아래 이미지를 <strong>길게 눌러 [이미지 저장]</strong>을 선택하세요.</p>
 <div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:55vh; overflow-y:auto; background:#f9f9f9;">
 <img id="generatedReportImg" style="width:100%; height:auto; display:block;" alt="보고서 이미지">
 </div>
@@ -626,35 +625,27 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 백업 및 복원 모달 -->
 <div class="modal-overlay" id="backupModal">
 <div class="modal-content">
 <h3 style="margin-bottom:10px; color:#7b1fa2;">💾 데이터 백업 및 복원</h3>
-<p style="font-size:0.82rem; color:#555; line-height:1.4; margin-bottom:12px;">
-모바일 환경 차단을 방지하기 위해 텍스트 상자를 통한 백업 및 복원을 지원합니다.
-</p>
-
 <div style="background:#f3e5f5; padding:10px; border-radius:6px; margin-bottom:15px;">
 <strong style="font-size:0.9rem; color:#4a148c;">1단계: 데이터 백업 (복사하기)</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 8px 0;">아래 버튼을 눌러 백업 텍스트를 복사하거나 상자 안의 내용을 전체 복사하세요.</p>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 8px 0;">아래 버튼을 눌러 백업 텍스트를 복사하세요.</p>
 <button class="btn btn-backup" style="width:100%; margin-bottom:8px;" onclick="copyBackupDataToClipboard()">📋 백업 데이터 클립보드 복사</button>
 <textarea id="exportDataTextarea" rows="3" placeholder="백업 코드가 여기에 표시됩니다..." style="font-size:0.75rem; background:#fff;" readonly onclick="this.select()"></textarea>
 </div>
-
 <div style="background:#e8eaf6; padding:10px; border-radius:6px; margin-bottom:12px;">
 <strong style="font-size:0.9rem; color:#1a237e;">2단계: 데이터 복원 (붙여넣기)</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">백업해둔 텍스트를 아래 칸에 붙여넣고 복원 버튼을 누르세요.</p>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">백업 텍스트를 아래 칸에 붙여넣고 복원 버튼을 누르세요.</p>
 <textarea id="restoreDataTextarea" rows="3" placeholder="백업 텍스트를 여기에 붙여넣으세요..." style="font-size:0.75rem; margin-bottom:8px;"></textarea>
 <button class="btn btn-restore" style="width:100%;" onclick="restoreFromTextarea()">📥 붙여넣은 데이터로 복원하기</button>
 </div>
-
 <div class="btn-group">
 <button class="btn btn-danger" onclick="closeBackupModal()">닫기</button>
 </div>
 </div>
 </div>
 
-<!-- 농가 인적사항 모달 -->
 <div class="modal-overlay" id="farmModal">
 <div class="modal-content">
 <h3 style="margin-bottom:12px; color:var(--primary-dark);">농가 상세 정보 등록/수정</h3>
@@ -670,7 +661,6 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 손글씨 캔버스 모달 -->
 <div class="modal-overlay" id="canvasModal">
 <div class="modal-content">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">손글씨 필기 메모장</h3>
@@ -687,7 +677,6 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 카메라 거리 측정 모달 -->
 <div class="modal-overlay" id="measureModal">
 <div class="measure-modal-content">
 <h3 style="margin-bottom:8px; color:#00ffcc; text-align:center; font-size:1rem;">AR 카메라 거리 측정기</h3>
@@ -713,7 +702,6 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 사진 크게보기 및 앨범 저장 모달 -->
 <div class="modal-overlay" id="photoViewModal">
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 측정 사진 크게 보기</h3>
@@ -727,7 +715,6 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 사용설명서 모달 -->
 <div class="modal-overlay" id="manualModal">
 <div class="modal-content">
 <h3 style="margin-bottom:12px; color:var(--primary-dark);">📖 슬기로운업무노트 사용설명서</h3>
@@ -739,16 +726,13 @@ line-height: 1.4;
 </ul>
 <p><strong>2. 주요 입력 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
-<li><strong>작물/파종:</strong> 작물의 파종 및 수확 이력을 지번과 함께 기록합니다.</li>
-<li><strong>농작물수입:</strong> 판매 금액, 수수료, 현물, 자가소비 및 증여량을 상세히 기록합니다.</li>
-<li><strong>수입표 / 지출표 / 조세:</strong> 보조금, 연금, 영농 자재비, 공과금 등을 체계적으로 관리합니다.</li>
-<li><strong>작업시간:</strong> 작업 인원과 소요 시간을 기록합니다.</li>
+<li><strong>작물/파종, 농작물수입, 수입표, 지출표, 작업시간, 조세:</strong> 각 탭에서 영농 활동 및 수지 내역을 체계적으로 입력하고 관리합니다.</li>
 </ul>
 <p><strong>3. 특화 부가 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
-<li><strong>📏 카메라 거리 측정:</strong> 화면 전체에 연장된 녹색 조준선을 맞추고 촬영하면 조준선과 거리가 합성된 사진이 생성되며, 팝업창에서 길게 눌러 앨범에 저장할 수 있습니다.</li>
-<li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표를 이미지로 변환하여 팝업창으로 띄워주며, 길게 눌러 안전하게 저장할 수 있습니다.</li>
-<li><strong>💾 데이터 백업 및 복원:</strong> 전체 데이터를 텍스트로 안전하게 복사하고 붙여넣어 복원할 수 있습니다.</li>
+<li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 길게 눌러 앨범에 저장할 수 있습니다.</li>
+<li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표를 이미지로 변환하여 팝업창으로 띄워줍니다.</li>
+<li><strong>💾 데이터 백업 및 복원:</strong> 텍스트 상자를 통해 안전하게 백업하고 복원할 수 있습니다.</li>
 </ul>
 </div>
 <div class="btn-group" style="margin-top:15px;">
@@ -757,7 +741,6 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 기록 수정 모달 -->
 <div class="modal-overlay" id="editModal">
 <div class="modal-content">
 <h3 style="margin-bottom:12px; color:var(--primary-dark);" id="editModalTitle">기록 수정하기</h3>
@@ -779,12 +762,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.42</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.43</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.42";
+const APP_VERSION = "v1.0.43";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
 let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
@@ -1001,7 +984,6 @@ closeFarmModal();
 initFarmSelect();
 }
 
-/* 사용설명서 모달 제어 */
 function openManualModal() {
 document.getElementById('manualModal').style.display = 'flex';
 }
@@ -1009,7 +991,6 @@ function closeManualModal() {
 document.getElementById('manualModal').style.display = 'none';
 }
 
-/* 백업 및 복원 모달 제어 */
 function openBackupModal() {
 const backupObj = {
 app: "슬기로운업무노트(농가경제)",
@@ -1063,7 +1044,6 @@ alert("데이터 형식이 올바르지 않습니다. 복사한 텍스트 전체
 }
 }
 
-/* 손글씨 캔버스 관련 */
 const canvas = document.getElementById('drawingCanvas');
 const ctx = canvas.getContext('2d');
 let isDrawing = false;
@@ -1127,7 +1107,6 @@ closeCanvasModal();
 alert('손글씨 메모가 저장되었습니다.');
 }
 
-/* 카메라 거리 측정 및 사진 팝업 연결 */
 const measureVideo = document.getElementById('measureCameraStream');
 const measurePhoneHeightInput = document.getElementById('measurePhoneHeight');
 const measureDistanceResult = document.getElementById('measureDistanceResult');
@@ -1215,7 +1194,6 @@ const ctxCapture = canvasCapture.getContext('2d');
 try {
 ctxCapture.drawImage(measureVideo, 0, 0, w, h);
 
-// 조준선 합성
 const cx = w / 2;
 const cy = h / 2;
 ctxCapture.strokeStyle = "#00ffcc";
@@ -1257,7 +1235,6 @@ updateYearFilterOptions(false);
 renderTable();
 closeMeasureModal();
 
-// 측정 직후 사진 팝업창을 띄워 길게 눌러 앨범에 저장하도록 안내
 document.getElementById('modalFullPhotoImg').src = dataURL;
 document.getElementById('photoViewModal').style.display = 'flex';
 } catch (e) {
@@ -1280,7 +1257,6 @@ const src = document.getElementById('viewFullImage').src;
 if (src) openPhotoViewModal(src);
 }
 
-/* 보고서 이미지 캡처 및 팝업 미리보기 (멈춤 현상 해결) */
 function captureAndShowReportImage() {
 const targetElement = document.getElementById('captureTargetArea');
 html2canvas(targetElement, {
@@ -1319,7 +1295,6 @@ function closeReportImageModal() {
 document.getElementById('reportImageModal').style.display = 'none';
 }
 
-/* 2단계 확인 절차를 거치는 농가 데이터 초기화 함수 */
 function confirmClearFarmData() {
 let farmName = farmDetails[currentFarmId].alias;
 let step1 = confirm(`[${farmName}]의 모든 기록을 초기화하시겠습니까? (1/2 단계)`);
