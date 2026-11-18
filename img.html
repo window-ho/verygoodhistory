@@ -6,7 +6,21 @@
 <meta name="robots" content="noindex,nofollow">
 <title>슬기로운업무노트 - 보고서 이미지 저장</title>
 <style>
-*{box-sizing:border-box}body{margin:0;padding:16px;background:linear-gradient(135deg,#f0f4f8,#d9e2ec);font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;color:#243b53;min-height:100vh;display:flex;justify-content:center;align-items:center}.card{background:#fff;width:100%;max-width:500px;padding:24px 18px;border-radius:20px;box-shadow:0 12px 30px #102a431a}h1{text-align:center;font-size:21px;margin:0 0 8px}.sub{text-align:center;color:#627d98;font-size:13px;line-height:1.5;margin:0 0 18px}.panel{padding:14px;background:#f8fafc;border:1px solid #d9e2ec;border-radius:13px}.hint{font-size:12px;line-height:1.55;color:#52667a;margin:6px 0 10px}.btn{display:block;width:100%;border:0;border-radius:9px;padding:13px 10px;margin:8px 0;background:#2e7d32;color:#fff;font-size:14px;font-weight:700}.btn.blue{background:#3949ab}.btn:disabled{opacity:.45}textarea{width:100%;min-height:70px;padding:8px;border:1px solid #bcccdc;border-radius:8px;font-size:10px;user-select:text;-webkit-user-select:text;-webkit-touch-callout:default;margin-bottom:8px}#preview{display:block;width:100%;height:auto;border:1px solid #d9e2ec;border-radius:8px;margin:12px 0;background:#fff}.status{font-size:12px;line-height:1.5;color:#52667a;margin:9px 0;overflow-wrap:anywhere}.footer{text-align:center;font-size:10px;color:#829ab1;border-top:1px solid #e2e8f0;margin-top:15px;padding-top:12px}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:linear-gradient(135deg,#f0f4f8,#d9e2ec);font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;color:#243b53;min-height:100vh;display:flex;justify-content:center;align-items:center}
+.card{background:#fff;width:100%;max-width:500px;padding:24px 18px;border-radius:20px;box-shadow:0 12px 30px #102a431a;text-align:center}
+h1{font-size:21px;margin:0 0 8px}
+.sub{text-align:center;color:#627d98;font-size:13px;line-height:1.5;margin:0 0 18px}
+.panel{padding:14px;background:#f8fafc;border:1px solid #d9e2ec;border-radius:13px;text-align:left}
+.hint{font-size:12px;line-height:1.55;color:#52667a;margin:6px 0 10px}
+.btn{display:block;width:100%;border:0;border-radius:9px;padding:13px 10px;margin:8px 0;background:#2e7d32;color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+.btn.blue{background:#3949ab}
+.btn:disabled{opacity:.45}
+textarea{width:100%;min-height:70px;padding:8px;border:1px solid #bcccdc;border-radius:8px;font-size:10px;user-select:text;-webkit-user-select:text;-webkit-touch-callout:default;margin-bottom:8px;resize:vertical}
+/* 이미지가 깨지지 않고 비율을 유지하며 선명하게 출력되도록 수정된 스타일 */
+#preview{display:block;width:100%;max-height:60vh;height:auto;object-fit:contain;border:1px solid #d9e2ec;border-radius:8px;margin:12px 0;background:#fff}
+.status{font-size:12px;line-height:1.5;color:#2e7d32;margin:9px 0;overflow-wrap:anywhere;font-weight:bold}
+.footer{text-align:center;font-size:10px;color:#829ab1;border-top:1px solid #e2e8f0;margin-top:15px;padding-top:12px}
 </style>
 </head>
 <body>
@@ -14,21 +28,20 @@
 <h1>슬기로운업무노트(농가경제)</h1>
 <p class="sub">보고서 이미지 생성·PNG 저장 전용 페이지</p>
 <section class="panel">
-<p class="hint">페이지가 열리면 클립보드의 이미지를 자동으로 불러옵니다. (불러오지 못할 경우 아래 칸을 길게 눌러 [붙여넣기] 하세요.)</p>
+<p class="hint">앱에서 전달된 보고서 이미지를 불러오는 중입니다. (만약 비어있다면 아래 입력란을 길게 눌러 [붙여넣기] 하세요.)</p>
 <textarea id="manualData" placeholder="자동 불러오기가 안 되면 이곳을 길게 눌러 [붙여넣기] 하세요." oninput="loadPastedImage()"></textarea>
 <div id="status" class="status">이미지를 불러오는 중입니다...</div>
 <img id="preview" alt="보고서 이미지 미리보기" hidden>
 <button id="downloadBtn" class="btn" onclick="downloadPng()" disabled>📥 PNG 이미지 저장</button>
-<button class="btn blue" onclick="readClipboardImage()" style="margin-top:10px;">📋 다시 불러오기</button>
+<button class="btn blue" onclick="readClipboardImage()" style="margin-top:6px;">📋 클립보드에서 다시 불러오기</button>
 </section>
 <div class="footer">© 2026 슬기로운업무노트(농가경제) · windowho@korea.kr</div>
 </main>
 <script>
 let imageData='';
-function setStatus(t,ok=false){const s=document.getElementById('status');s.textContent=t;s.style.color=ok?'#2e7d32':'#52667a';}
+function setStatus(t,ok=false){const s=document.getElementById('status');s.textContent=t;s.style.color=ok?'#2e7d32':'#c05621';}
 
 window.addEventListener('DOMContentLoaded', () => {
-  // 페이지 열리자마자 자동 실행
   readClipboardImage();
 });
 
@@ -44,7 +57,6 @@ async function readClipboardImage(){
     }
   } catch(e) {}
   
-  // 클립보드 읽기 보안 차단 시 수동 입력란 포커스
   setStatus('자동 불러오기가 차단되었습니다. 아래 입력란을 길게 눌러 [붙여넣기] 해 주세요.');
   document.getElementById('manualData').focus();
 }
@@ -56,7 +68,7 @@ function showImage(value){
   img.hidden=false;
   imageData=value;
   document.getElementById('downloadBtn').disabled=false;
-  setStatus('이미지 미리보기가 완료되었습니다! 아래 [PNG 이미지 저장]을 누르세요.',true);
+  setStatus('이미지를 정상적으로 불러왔습니다. [PNG 이미지 저장]을 누르세요.',true);
 }
 
 function loadPastedImage(){
