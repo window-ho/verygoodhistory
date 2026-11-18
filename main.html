@@ -7,6 +7,7 @@
 <meta name="author" content="windowho@korea.kr">
 <meta name="copyright" content="Copyright © windowho@korea.kr All Rights Reserved.">
 <title>슬기로운업무노트(농가경제)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
 --primary: #2e7d32;
@@ -22,20 +23,10 @@ box-sizing: border-box;
 margin: 0;
 padding: 0;
 font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif;
-}
-html, body, body * {
--webkit-touch-callout: none !important;
--webkit-user-select: none !important;
--moz-user-select: none !important;
--ms-user-select: none !important;
-user-select: none !important;
-}
-input, textarea, select, [contenteditable="true"] {
--webkit-user-select: text !important;
--moz-user-select: text !important;
--ms-user-select: text !important;
-user-select: text !important;
--webkit-touch-callout: default !important;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
 }
 html, body {
 width: 100%;
@@ -47,6 +38,10 @@ font-size: 16px;
 -webkit-text-size-adjust: 100%;
 }
 input, select, textarea {
+-webkit-user-select: text;
+-moz-user-select: text;
+-ms-user-select: text;
+user-select: text;
 font-size: 0.95rem;
 }
 body {
@@ -303,44 +298,6 @@ box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 max-height: 90vh;
 overflow-y: auto;
 }
-body.report-modal-open {
-position: fixed;
-width: 100%;
-overflow: hidden;
-left: 0;
-right: 0;
-}
-#reportImageModal {
-height: 100vh;
-height: 100dvh;
-overflow: hidden;
-overscroll-behavior: contain;
-touch-action: pan-y;
-}
-#reportImageModal .modal-content {
-max-height: 86vh;
-max-height: 86dvh;
-overflow-y: auto;
-overscroll-behavior: contain;
--webkit-overflow-scrolling: touch;
-}
-#reportImagePreview {
-max-height: 58vh;
-max-height: 58dvh;
-overflow: auto;
-overscroll-behavior: contain;
--webkit-overflow-scrolling: touch;
-touch-action: pan-y;
-}
-#generatedReportImg {
-display: block;
-width: 100%;
-height: auto;
--webkit-user-select: none !important;
-user-select: none !important;
--webkit-touch-callout: none !important;
-touch-action: pan-y;
-}
 #drawingCanvas {
 border: 2px dashed var(--primary);
 background: #ffffff;
@@ -424,7 +381,7 @@ line-height: 1.4;
 }
 </style>
 </head>
-<body>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
 
 <div>
 <header>
@@ -444,7 +401,7 @@ line-height: 1.4;
 </div>
 </header>
 
-<!-- 농가 선택 및 정렬 -->
+<!-- 농가 선택 및 정렬 옵션 -->
 <div class="farm-selector-box">
 <div class="farm-selector-row">
 <label for="farmSelect">조사 농가 선택:</label>
@@ -623,7 +580,7 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 데이터 테이블 및 하단 버튼 -->
+<!-- 데이터 테이블 및 버튼 -->
 <div class="card">
 <div id="captureTargetArea" style="background: #ffffff; padding: 8px; border-radius: 6px;">
 <h3>[<span id="printFarmTitle">농가01</span>] 현장 기록표 (클릭 시 수정)</h3>
@@ -645,27 +602,27 @@ line-height: 1.4;
 </div>
 
 <div class="btn-group" style="margin-top:12px;">
-<button class="btn btn-print" onclick="captureAndShowReportImage()" style="flex:1;">📷 보고서 이미지 생성</button>
+<button class="btn btn-print" onclick="captureAndShowReportImage()">📷 보고서 이미지 저장</button>
+<button class="btn btn-danger" onclick="confirmClearFarmData()">현재농가 초기화</button>
 </div>
 </div>
 
-<!-- 모달 창들 -->
+<!-- 보고서 이미지 저장/미리보기 모달 -->
 <div class="modal-overlay" id="reportImageModal">
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
-<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
-아래 [이미지로 저장] 버튼을 누르면 이미지 전용 사이트에서 곧바로 PNG로 저장할 수 있습니다.
-</p>
-<div id="reportImagePreview" style="border:1px solid #ccc; border-radius:4px; margin-bottom:12px; background:#f9f9f9;">
-<img id="generatedReportImg" alt="보고서 이미지" oncontextmenu="return false;" draggable="false">
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">자동 저장이 안 될 경우 아래 이미지를 <strong>길게 눌러 '이미지 저장'</strong>을 선택하세요.</p>
+<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:55vh; overflow-y:auto;">
+<img id="generatedReportImg" style="width:100%; height:auto; display:block;" alt="보고서 이미지">
 </div>
-<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="copyReportImageAndOpenChrome()">💾 이미지로 저장</button>
 <div class="btn-group">
+<button class="btn btn-print" id="btnDownloadReportImg">💾 파일로 다시 다운로드</button>
 <button class="btn btn-danger" onclick="closeReportImageModal()">닫기</button>
 </div>
 </div>
 </div>
 
+<!-- 농가 인적사항 모달 -->
 <div class="modal-overlay" id="farmModal">
 <div class="modal-content">
 <h3 style="margin-bottom:12px; color:var(--primary-dark);">농가 상세 정보 등록/수정</h3>
@@ -681,6 +638,7 @@ line-height: 1.4;
 </div>
 </div>
 
+<!-- 손글씨 캔버스 모달 -->
 <div class="modal-overlay" id="canvasModal">
 <div class="modal-content">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">손글씨 필기 메모장</h3>
@@ -697,6 +655,7 @@ line-height: 1.4;
 </div>
 </div>
 
+<!-- 카메라 거리 측정 모달 -->
 <div class="modal-overlay" id="measureModal">
 <div class="measure-modal-content">
 <h3 style="margin-bottom:8px; color:#00ffcc; text-align:center; font-size:1rem;">AR 카메라 거리 측정기</h3>
@@ -722,20 +681,7 @@ line-height: 1.4;
 </div>
 </div>
 
-<div class="modal-overlay" id="photoViewModal">
-<div class="modal-content" style="text-align:center;">
-<h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 측정 사진 크게 보기</h3>
-<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">사진을 꾹 눌러 저장하거나 아래 버튼을 누르세요.</p>
-<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; background:#000;">
-<img id="modalFullPhotoImg" style="width:100%; height:auto; display:block;" alt="측정사진">
-</div>
-<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadModalPhotoDirectly()">💾 사진 파일로 직접 다운로드</button>
-<div class="btn-group">
-<button class="btn btn-danger" onclick="closePhotoViewModal()">닫기</button>
-</div>
-</div>
-</div>
-
+<!-- 사용설명서 모달 -->
 <div class="modal-overlay" id="manualModal">
 <div class="modal-content">
 <h3 style="margin-bottom:12px; color:var(--primary-dark);">📖 슬기로운업무노트 사용설명서</h3>
@@ -743,16 +689,19 @@ line-height: 1.4;
 <p><strong>1. 농가 관리 및 조회 기간</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
 <li>상단에서 조사할 농가를 선택하거나 <strong>[+ 새 농가]</strong>를 등록하세요.</li>
-<li>조회 기간은 기본적으로 <strong>당월(이번 달)</strong>이 우선 표시되며, 연도/월 필터를 변경하여 조회할 수 있습니다.</li>
+<li>조회 기간은 기본적으로 <strong>당월(이번 달)</strong>이 우선 표시되며, 연도/월 필터를 변경하여 원하는 기간을 조회할 수 있습니다.</li>
 </ul>
 <p><strong>2. 주요 입력 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
-<li><strong>작물/파종, 농작물수입, 수입표, 지출표, 작업시간, 조세:</strong> 영농 활동 및 수지 내역을 체계적으로 입력합니다.</li>
+<li><strong>작물/파종:</strong> 작물의 파종 및 수확 이력을 지번과 함께 기록합니다.</li>
+<li><strong>농작물수입:</strong> 판매 금액, 수수료, 현물, 자가소비 및 증여량을 상세히 기록합니다.</li>
+<li><strong>수입표 / 지출표 / 조세:</strong> 보조금, 연금, 영농 자재비, 공과금 등을 체계적으로 관리합니다.</li>
+<li><strong>작업시간:</strong> 작업 인원과 소요 시간을 기록합니다.</li>
 </ul>
 <p><strong>3. 특화 부가 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
-<li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 저장할 수 있습니다.</li>
-<li><strong>📷 보고서 이미지 생성:</strong> 현장 기록표를 이미지로 변환한 뒤 이미지 페이지에서 확인할 수 있습니다.</li>
+<li><strong>📏 카메라 거리 측정:</strong> 화면 전체에 연장된 녹색 조준선을 바닥 기준점에 맞추고 <strong>[사진 찍고 앨범/기록표 저장]</strong>을 누르면 조준선과 측정값이 합성된 사진이 저장됩니다.</li>
+<li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표만 깔끔하게 이미지로 변환합니다.</li>
 </ul>
 </div>
 <div class="btn-group" style="margin-top:15px;">
@@ -761,12 +710,12 @@ line-height: 1.4;
 </div>
 </div>
 
+<!-- 기록 수정 모달 -->
 <div class="modal-overlay" id="editModal">
 <div class="modal-content">
 <h3 style="margin-bottom:12px; color:var(--primary-dark);" id="editModalTitle">기록 수정하기</h3>
 <div id="imageViewerArea" style="display:none; text-align:center; margin-bottom:12px;">
-<img id="viewFullImage" style="max-width:100%; max-height:220px; border:2px solid var(--primary); border-radius:4px; cursor:pointer;" onclick="openPhotoFromViewer()" alt="큰사진">
-<button class="btn btn-print" style="width:100%; margin-top:8px;" onclick="downloadViewerPhotoDirectly()">💾 이 사진 파일로 다운로드</button>
+<img id="viewFullImage" style="max-width:100%; max-height:280px; border:2px solid var(--primary); border-radius:4px;" alt="큰사진">
 </div>
 <div id="editFormArea">
 <div class="form-group"><label>일자</label><input type="date" id="edit-date"></div>
@@ -782,13 +731,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.56</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.42</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.56";
-const IMAGE_SITE_URL = "https://window-ho.github.io/verygoodhistory/img.html";
+const APP_VERSION = "v1.0.42";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
 let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
@@ -1084,7 +1032,10 @@ let lastCalculatedDistance = 0;
 
 async function initMeasureCamera() {
 try {
-const constraints = { video: { facingMode: { exact: "environment" } }, audio: false };
+const constraints = {
+video: { facingMode: { exact: "environment" } },
+audio: false
+};
 let stream;
 try {
 stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -1149,20 +1100,14 @@ alert('유효한 측정 거리가 없습니다. 바닥을 향해 폰을 기울�
 return;
 }
 
-try {
 const canvasCapture = document.createElement('canvas');
 const w = measureVideo.videoWidth || 640;
 const h = measureVideo.videoHeight || 480;
-
-if (w === 0 || h === 0) {
-  alert('카메라 화면이 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.');
-  return;
-}
-
 canvasCapture.width = w;
 canvasCapture.height = h;
 const ctxCapture = canvasCapture.getContext('2d');
 
+try {
 ctxCapture.drawImage(measureVideo, 0, 0, w, h);
 
 const cx = w / 2;
@@ -1191,6 +1136,13 @@ ctxCapture.fillText(distText, cx, h - fontSize * 0.6);
 
 const dataURL = canvasCapture.toDataURL('image/png');
 
+const a = document.createElement('a');
+a.href = dataURL;
+a.download = `거리측정_${new Date().toISOString().slice(0,10)}_${lastCalculatedDistance.toFixed(1)}cm.png`;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+
 allFarmData[currentFarmId].push({
 type: 'note',
 date: new Date().toISOString().slice(0,10),
@@ -1205,199 +1157,55 @@ autoSaveAndBackup();
 updateYearFilterOptions(false);
 renderTable();
 closeMeasureModal();
-
-document.getElementById('modalFullPhotoImg').src = dataURL;
-document.getElementById('photoViewModal').style.display = 'flex';
-
+alert('거리 측정 사진이 저장되었으며 현장 기록표에 등록되었습니다!');
 } catch (e) {
-console.error("카메라 캡처 오류:", e);
-alert('사진 캡처 중 오류가 발생했습니다. 카메라를 다시 켠 후 시도해 주세요.');
+console.error(e);
+alert('사진 저장 중 오류가 발생했습니다.');
 }
 }
 
-function openPhotoViewModal(url) {
-if (url) {
-document.getElementById('modalFullPhotoImg').src = url;
-}
-document.getElementById('photoViewModal').style.display = 'flex';
-}
-function closePhotoViewModal() {
-document.getElementById('photoViewModal').style.display = 'none';
-}
-function openPhotoFromViewer() {
-const src = document.getElementById('viewFullImage').src;
-if (src) openPhotoViewModal(src);
-}
+function captureAndShowReportImage() {
+const targetElement = document.getElementById('captureTargetArea');
+html2canvas(targetElement, {
+scale: 2,
+useCORS: true,
+backgroundColor: "#ffffff",
+logging: false
+}).then(canvas => {
+const imageURL = canvas.toDataURL('image/png');
+const imgEl = document.getElementById('generatedReportImg');
+imgEl.src = imageURL;
 
-function downloadModalPhotoDirectly() {
-const imgSrc = document.getElementById('modalFullPhotoImg').src;
-if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
-triggerDownload(imgSrc, `농가경제_측정사진_${new Date().toISOString().slice(0,10)}.png`);
-}
+const fileName = `농가경제_기록표_${farmDetails[currentFarmId].alias}_${new Date().toISOString().slice(0,10)}.png`;
 
-function downloadViewerPhotoDirectly() {
-const imgSrc = document.getElementById('viewFullImage').src;
-if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
-triggerDownload(imgSrc, `농가경제_기록사진_${new Date().toISOString().slice(0,10)}.png`);
-}
-
-function triggerDownload(url, filename) {
+try {
 const a = document.createElement('a');
-a.href = url;
-a.download = filename;
+a.href = imageURL;
+a.download = fileName;
 document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
-}
+} catch (e) {}
 
-let html2CanvasLoadPromise = null;
+document.getElementById('btnDownloadReportImg').onclick = function() {
+const a = document.createElement('a');
+a.href = imageURL;
+a.download = fileName;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+};
 
-async function ensureHtml2CanvasLoaded() {
-  if (typeof window.html2canvas === 'function') return window.html2canvas;
-  if (html2CanvasLoadPromise) return html2CanvasLoadPromise;
-
-  const cdnUrls = [
-    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
-    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
-    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
-  ];
-
-  html2CanvasLoadPromise = (async () => {
-    for (const url of cdnUrls) {
-      try {
-        await new Promise((resolve, reject) => {
-          const script = document.createElement('script');
-          script.src = url;
-          script.async = true;
-          script.onload = resolve;
-          script.onerror = () => { script.remove(); reject(new Error('로드 실패')); };
-          document.head.appendChild(script);
-        });
-        if (typeof window.html2canvas === 'function') return window.html2canvas;
-      } catch (e) {}
-    }
-    throw new Error('이미지 변환 라이브러리를 불러오지 못했습니다.');
-  })();
-
-  try { return await html2CanvasLoadPromise; } finally { html2CanvasLoadPromise = null; }
-}
-
-async function captureAndShowReportImage() {
-  const button = document.querySelector('button[onclick="captureAndShowReportImage()"]');
-  const originalText = button ? button.innerText : '';
-  const targetElement = document.getElementById('captureTargetArea');
-
-  if (!targetElement) { alert('영역을 찾을 수 없습니다.'); return; }
-
-  try {
-    if (button) { button.disabled = true; button.innerText = '이미지 생성 중...'; }
-    const capture = await ensureHtml2CanvasLoaded();
-
-    const tableWrap = targetElement.querySelector('.table-responsive');
-    const oldOverflow = tableWrap ? tableWrap.style.overflow : '';
-    const oldWidth = tableWrap ? tableWrap.style.width : '';
-    if (tableWrap) { tableWrap.style.overflow = 'visible'; tableWrap.style.width = 'max-content'; }
-
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-    const canvas = await capture(targetElement, {
-      scale: 1.5,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      logging: false,
-      scrollX: 0,
-      scrollY: 0,
-      windowWidth: Math.max(document.documentElement.clientWidth, targetElement.scrollWidth)
-    });
-
-    if (tableWrap) { tableWrap.style.overflow = oldOverflow; tableWrap.style.width = oldWidth; }
-
-    const imageURL = canvas.toDataURL('image/png');
-    if (!imageURL) throw new Error('생성 실패');
-
-    document.getElementById('generatedReportImg').src = imageURL;
-    openReportImageModal();
-  } catch (err) {
-    alert('보고서 이미지 생성 실패: ' + err.message);
-  } finally {
-    if (button) { button.disabled = false; button.innerText = originalText || '📷 보고서 이미지 생성'; }
-  }
-}
-
-let reportModalScrollY = 0;
-
-function openReportImageModal() {
-  reportModalScrollY = window.scrollY || window.pageYOffset || 0;
-  document.body.style.top = `-${reportModalScrollY}px`;
-  document.body.classList.add('report-modal-open');
-  document.getElementById('reportImageModal').style.display = 'flex';
+document.getElementById('reportImageModal').style.display = 'flex';
+}).catch(err => {
+console.error(err);
+alert('보고서 이미지 생성 중 오류가 발생했습니다.');
+});
 }
 
 function closeReportImageModal() {
-  document.getElementById('reportImageModal').style.display = 'none';
-  document.body.classList.remove('report-modal-open');
-  document.body.style.top = '';
-  window.scrollTo(0, reportModalScrollY);
+document.getElementById('reportImageModal').style.display = 'none';
 }
-
-function fallbackExternalCopy(text) {
-  const tempInput = document.createElement("textarea");
-  tempInput.value = text;
-  tempInput.setAttribute("readonly", "");
-  tempInput.style.cssText = "position:fixed;left:0;top:0;width:100%;height:2px;opacity:0.02;z-index:2147483647;";
-  document.body.appendChild(tempInput);
-  tempInput.focus();
-  tempInput.select();
-  tempInput.setSelectionRange(0, tempInput.value.length);
-  let ok = false;
-  try { ok = document.execCommand("copy") === true; } catch (err) { ok = false; }
-  tempInput.remove();
-  return ok;
-}
-
-async function copyReportImageAndOpenChrome() {
-  const img = document.getElementById('generatedReportImg');
-  if (!img || !img.src || !img.src.startsWith('data:image/png')) {
-    alert('먼저 보고서 이미지를 생성해 주세요.');
-    return;
-  }
-  const imageData = img.src;
-  
-  let copied = fallbackExternalCopy(imageData);
-  if (!copied && navigator.clipboard && navigator.clipboard.writeText) {
-    try { await navigator.clipboard.writeText(imageData); copied = true; }
-    catch (e) {}
-  }
-
-  if (!copied) {
-    alert('이미지 클립보드 복사가 차단되었습니다.');
-    return;
-  }
-
-  if (/android/i.test(navigator.userAgent)) {
-    window.location.href = 'intent://window-ho.github.io/verygoodhistory/img.html#Intent;scheme=https;package=com.android.chrome;end;';
-  } else {
-    window.open(IMAGE_SITE_URL, '_blank');
-  }
-}
-
-function confirmClearFarmData() {
-let farmName = farmDetails[currentFarmId].alias;
-let step1 = confirm(`[${farmName}]의 모든 기록을 초기화하시겠습니까? (1/2 단계)`);
-if (!step1) return;
-let step2 = confirm(`정말 초기화됩니다! [${farmName}] 데이터를 완전히 삭제하시겠습니까? (2/2 단계)`);
-if (step2) {
-allFarmData[currentFarmId] = [];
-autoSaveAndBackup();
-updateYearFilterOptions(false);
-renderTable();
-alert('현재 농가 데이터가 초기화되었습니다.');
-}
-}
-
-document.addEventListener('contextmenu', function(e) {
-  if (!e.target.closest('input, textarea, select, [contenteditable="true"]')) e.preventDefault();
-}, { capture: true });
 
 document.querySelectorAll('input[type="date"]').forEach(el => el.valueAsDate = new Date());
 
@@ -1594,6 +1402,21 @@ allFarmData[currentFarmId].splice(index, 1);
 autoSaveAndBackup();
 updateYearFilterOptions(false);
 renderTable();
+}
+}
+
+function confirmClearFarmData() {
+let step1 = confirm(`[${farmDetails[currentFarmId].alias}] 데이터를 정말 초기화하시겠습니까? (1/3 단계)`);
+if (!step1) return;
+let step2 = confirm('초기화하면 모든 기록이 삭제됩니다. 계속하시겠습니까? (2/3 단계)');
+if (!step2) return;
+let step3 = confirm('마지막 경고입니다! 정말로 현재 농가 데이터를 모두 지우시겠습니까? (3/3 단계)');
+if (step3) {
+allFarmData[currentFarmId] = [];
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+alert('초기화되었습니다.');
 }
 }
 
