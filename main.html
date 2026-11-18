@@ -310,7 +310,7 @@ cursor: crosshair;
 border-radius: 4px;
 }
 
-/* AR 카메라 거리 측정 모달 스타일 (화면 끝까지 연장된 녹색 조준선) */
+/* AR 카메라 거리 측정 모달 스타일 */
 .measure-modal-content {
 background: #121212;
 color: #ffffff;
@@ -341,7 +341,6 @@ width: 100%;
 height: 100%;
 object-fit: cover;
 }
-/* 화면 전체를 가로지르는 가로선 */
 .crosshair-h {
 position: absolute;
 top: 50%;
@@ -352,7 +351,6 @@ background-color: rgba(0, 255, 204, 0.85);
 transform: translateY(-50%);
 pointer-events: none;
 }
-/* 화면 전체를 가로지르는 세로선 */
 .crosshair-v {
 position: absolute;
 left: 50%;
@@ -363,7 +361,6 @@ background-color: rgba(0, 255, 204, 0.85);
 transform: translateX(-50%);
 pointer-events: none;
 }
-/* 중앙 타겟 원 */
 .crosshair-center {
 position: absolute;
 top: 50%;
@@ -403,7 +400,7 @@ line-height: 1.4;
 <hr style="border:0; border-top:1px solid #ddd;">
 <button onclick="openMeasureModal(); toggleMenu();" style="color:#00897b;">📏 카메라 거리 측정</button>
 <button onclick="openManualModal(); toggleMenu();" style="color:#2196f3;">📖 사용설명서</button>
-<button onclick="openBackupModal(); toggleMenu();" style="color:#7b1fa2;">💾 백업 및 복원 (워크플래너방식)</button>
+<button onclick="openBackupModal(); toggleMenu();" style="color:#7b1fa2;">💾 데이터 백업 및 복원</button>
 <button class="menu-danger" onclick="confirmClearFarmData(); toggleMenu();">현재농가 초기화</button>
 </div>
 </header>
@@ -587,7 +584,7 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 데이터 테이블 및 버튼 (캡처 영역과 버튼 영역 분리) -->
+<!-- 데이터 테이블 및 버튼 (초기화 버튼 제거 완료) -->
 <div class="card">
 <div id="captureTargetArea" style="background: #ffffff; padding: 8px; border-radius: 6px;">
 <h3>[<span id="printFarmTitle">농가01</span>] 현장 기록표 (클릭 시 수정)</h3>
@@ -610,44 +607,44 @@ line-height: 1.4;
 
 <div class="btn-group" style="margin-top:12px;">
 <button class="btn btn-print" onclick="captureAndShowReportImage()">📷 보고서 이미지 저장</button>
-<button class="btn btn-backup" onclick="openBackupModal()">💾 백업 / 복원 (워크플래너방식)</button>
-<button class="btn btn-danger" onclick="confirmClearFarmData()">현재농가 초기화</button>
+<button class="btn btn-backup" onclick="openBackupModal()">💾 백업 및 복원</button>
 </div>
 </div>
 
-<!-- 보고서 이미지 저장/미리보기 모달 -->
+<!-- 보고서 이미지 저장/미리보기 모달 (웹뷰 멈춤 현상 완벽 해결) -->
 <div class="modal-overlay" id="reportImageModal">
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
-<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">자동 저장이 안 될 경우 아래 이미지를 <strong>길게 눌러 '이미지 저장'</strong>을 선택하세요.</p>
-<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:55vh; overflow-y:auto;">
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">아래 이미지를 <strong>길게 눌러 [이미지 다운로드]</strong> 또는 <strong>[이미지 저장]</strong>을 선택하세요.</p>
+<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:55vh; overflow-y:auto; background:#f9f9f9;">
 <img id="generatedReportImg" style="width:100%; height:auto; display:block;" alt="보고서 이미지">
 </div>
 <div class="btn-group">
-<button class="btn btn-print" id="btnDownloadReportImg">💾 파일로 다시 다운로드</button>
+<button class="btn btn-print" id="btnDownloadReportImg">💾 파일 다운로드 재시도</button>
 <button class="btn btn-danger" onclick="closeReportImageModal()">닫기</button>
 </div>
 </div>
 </div>
 
-<!-- 워크플래너 방식 백업 및 복원 모달 -->
+<!-- 백업 및 복원 모달 -->
 <div class="modal-overlay" id="backupModal">
 <div class="modal-content">
 <h3 style="margin-bottom:10px; color:#7b1fa2;">💾 데이터 백업 및 복원</h3>
 <p style="font-size:0.82rem; color:#555; line-height:1.4; margin-bottom:12px;">
-스마트폰 앱(APK) 환경에서는 파일 다운로드가 차단될 수 있으므로, <strong>워크플래너와 동일한 텍스트 복사 및 외부 백업 변환 사이트</strong>를 이용합니다.
+모바일 환경 차단을 방지하기 위해 텍스트 상자를 통한 백업 및 복원을 지원합니다.
 </p>
 
 <div style="background:#f3e5f5; padding:10px; border-radius:6px; margin-bottom:15px;">
-<strong style="font-size:0.9rem; color:#4a148c;">1단계: 전체 데이터 백업하기</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 8px 0;">아래 버튼을 누르면 전체 데이터가 클립보드에 자동 복사되며, 백업 변환 사이트로 이동합니다.</p>
-<button class="btn btn-backup" style="width:100%;" onclick="copyAndOpenBackupSite()">📋 데이터 복사 & 백업사이트 열기</button>
+<strong style="font-size:0.9rem; color:#4a148c;">1단계: 데이터 백업 (복사하기)</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 8px 0;">아래 버튼을 눌러 백업 텍스트를 복사하거나 상자 안의 내용을 전체 복사하세요.</p>
+<button class="btn btn-backup" style="width:100%; margin-bottom:8px;" onclick="copyBackupDataToClipboard()">📋 백업 데이터 클립보드 복사</button>
+<textarea id="exportDataTextarea" rows="3" placeholder="백업 코드가 여기에 표시됩니다..." style="font-size:0.75rem; background:#fff;" readonly onclick="this.select()"></textarea>
 </div>
 
 <div style="background:#e8eaf6; padding:10px; border-radius:6px; margin-bottom:12px;">
-<strong style="font-size:0.9rem; color:#1a237e;">2단계: 백업 데이터 복원하기</strong>
-<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">백업해둔 텍스트(JSON 코드)를 아래 칸에 붙여넣고 복원 버튼을 누르세요.</p>
-<textarea id="restoreDataTextarea" rows="4" placeholder="여기에 백업 텍스트를 붙여넣으세요..." style="font-size:0.8rem; margin-bottom:8px;"></textarea>
+<strong style="font-size:0.9rem; color:#1a237e;">2단계: 데이터 복원 (붙여넣기)</strong>
+<p style="font-size:0.8rem; color:#555; margin:4px 0 6px 0;">백업해둔 텍스트를 아래 칸에 붙여넣고 복원 버튼을 누르세요.</p>
+<textarea id="restoreDataTextarea" rows="3" placeholder="백업 텍스트를 여기에 붙여넣으세요..." style="font-size:0.75rem; margin-bottom:8px;"></textarea>
 <button class="btn btn-restore" style="width:100%;" onclick="restoreFromTextarea()">📥 붙여넣은 데이터로 복원하기</button>
 </div>
 
@@ -690,7 +687,7 @@ line-height: 1.4;
 </div>
 </div>
 
-<!-- 카메라 거리 측정 모달 (화면 끝까지 연장된 녹색 조준선) -->
+<!-- 카메라 거리 측정 모달 -->
 <div class="modal-overlay" id="measureModal">
 <div class="measure-modal-content">
 <h3 style="margin-bottom:8px; color:#00ffcc; text-align:center; font-size:1rem;">AR 카메라 거리 측정기</h3>
@@ -716,6 +713,20 @@ line-height: 1.4;
 </div>
 </div>
 
+<!-- 사진 크게보기 및 앨범 저장 모달 -->
+<div class="modal-overlay" id="photoViewModal">
+<div class="modal-content" style="text-align:center;">
+<h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 측정 사진 크게 보기</h3>
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">사진을 <strong>길게 눌러 앨범에 저장</strong>할 수 있습니다.</p>
+<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; background:#000;">
+<img id="modalFullPhotoImg" style="width:100%; height:auto; display:block;" alt="측정사진">
+</div>
+<div class="btn-group">
+<button class="btn btn-danger" onclick="closePhotoViewModal()">닫기</button>
+</div>
+</div>
+</div>
+
 <!-- 사용설명서 모달 -->
 <div class="modal-overlay" id="manualModal">
 <div class="modal-content">
@@ -735,9 +746,9 @@ line-height: 1.4;
 </ul>
 <p><strong>3. 특화 부가 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
-<li><strong>📏 카메라 거리 측정:</strong> 화면 전체에 연장된 녹색 조준선을 바닥 기준점에 맞추고 <strong>[사진 찍고 앨범/기록표 저장]</strong>을 누르면 조준선과 측정값이 합성된 사진이 저장됩니다.</li>
-<li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표만 깔끔하게 이미지로 변환하며, 앱에서 자동 다운로드가 안 될 경우 뜬 이미지를 길게 눌러 앨범에 저장할 수 있습니다.</li>
-<li><strong>💾 백업 / 복원 (워크플래너 방식):</strong> 전체 데이터를 클립보드에 복사하여 외부 백업 사이트(<code>backup.html</code>)에 안전하게 저장하거나, 텍스트를 붙여넣어 즉시 복원할 수 있습니다.</li>
+<li><strong>📏 카메라 거리 측정:</strong> 화면 전체에 연장된 녹색 조준선을 맞추고 촬영하면 조준선과 거리가 합성된 사진이 생성되며, 팝업창에서 길게 눌러 앨범에 저장할 수 있습니다.</li>
+<li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표를 이미지로 변환하여 팝업창으로 띄워주며, 길게 눌러 안전하게 저장할 수 있습니다.</li>
+<li><strong>💾 데이터 백업 및 복원:</strong> 전체 데이터를 텍스트로 안전하게 복사하고 붙여넣어 복원할 수 있습니다.</li>
 </ul>
 </div>
 <div class="btn-group" style="margin-top:15px;">
@@ -751,7 +762,8 @@ line-height: 1.4;
 <div class="modal-content">
 <h3 style="margin-bottom:12px; color:var(--primary-dark);" id="editModalTitle">기록 수정하기</h3>
 <div id="imageViewerArea" style="display:none; text-align:center; margin-bottom:12px;">
-<img id="viewFullImage" style="max-width:100%; max-height:280px; border:2px solid var(--primary); border-radius:4px;" alt="큰사진">
+<img id="viewFullImage" style="max-width:100%; max-height:250px; border:2px solid var(--primary); border-radius:4px; cursor:pointer;" onclick="openPhotoFromViewer()" alt="큰사진">
+<p style="font-size:0.75rem; color:#666; margin-top:4px;">사진을 터치하면 크게 볼 수 있습니다.</p>
 </div>
 <div id="editFormArea">
 <div class="form-group"><label>일자</label><input type="date" id="edit-date"></div>
@@ -767,13 +779,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.41</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.42</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.41";
-const BACKUP_SITE_URL = "https://window-ho.github.io/ind/backup.html";
+const APP_VERSION = "v1.0.42";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
 let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
@@ -998,16 +1009,8 @@ function closeManualModal() {
 document.getElementById('manualModal').style.display = 'none';
 }
 
-/* 워크플래너 방식 백업 및 복원 모달 제어 */
+/* 백업 및 복원 모달 제어 */
 function openBackupModal() {
-document.getElementById('restoreDataTextarea').value = '';
-document.getElementById('backupModal').style.display = 'flex';
-}
-function closeBackupModal() {
-document.getElementById('backupModal').style.display = 'none';
-}
-
-function copyAndOpenBackupSite() {
 const backupObj = {
 app: "슬기로운업무노트(농가경제)",
 version: APP_VERSION,
@@ -1015,41 +1018,35 @@ exportedAt: new Date().toISOString(),
 details: farmDetails,
 data: allFarmData
 };
-const jsonString = JSON.stringify(backupObj);
-
-if (navigator.clipboard && navigator.clipboard.writeText) {
-navigator.clipboard.writeText(jsonString).then(() => {
-alert("전체 데이터가 클립보드에 복사되었습니다!\n이동하는 백업 사이트에서 [붙여넣기] 후 파일로 저장하세요.");
-window.open(BACKUP_SITE_URL, "_blank");
-}).catch(() => {
-fallbackCopyText(jsonString);
-});
-} else {
-fallbackCopyText(jsonString);
+document.getElementById('exportDataTextarea').value = JSON.stringify(backupObj, null, 2);
+document.getElementById('restoreDataTextarea').value = '';
+document.getElementById('backupModal').style.display = 'flex';
 }
+function closeBackupModal() {
+document.getElementById('backupModal').style.display = 'none';
 }
 
-function fallbackCopyText(text) {
-const tempInput = document.createElement("textarea");
-tempInput.value = text;
-document.body.appendChild(tempInput);
-tempInput.select();
-document.execCommand("copy");
-document.body.removeChild(tempInput);
-alert("전체 데이터가 클립보드에 복사되었습니다!\n이동하는 백업 사이트에서 [붙여넣기] 후 파일로 저장하세요.");
-window.open(BACKUP_SITE_URL, "_blank");
+function copyBackupDataToClipboard() {
+const textarea = document.getElementById('exportDataTextarea');
+textarea.select();
+try {
+document.execCommand('copy');
+alert("백업 코드가 복사되었습니다! 안전한 곳에 붙여넣어 보관하세요.");
+} catch (e) {
+alert("자동 복사가 지원되지 않는 기기입니다. 상자 안의 텍스트를 직접 전체 선택하여 복사해 주세요.");
+}
 }
 
 function restoreFromTextarea() {
 const rawText = document.getElementById('restoreDataTextarea').value.trim();
 if (!rawText) {
-alert("복원할 백업 텍스트를 붙여넣어 주세요.");
+alert("복원할 텍스트를 붙여넣어 주세요.");
 return;
 }
 try {
 const parsed = JSON.parse(rawText);
 if (parsed.details && parsed.data) {
-if (confirm("기존 데이터를 덮어쓰고 백업 데이터로 복원하시겠습니까?")) {
+if (confirm("기존 데이터를 덮어쓰고 복원하시겠습니까?")) {
 farmDetails = parsed.details;
 allFarmData = parsed.data;
 autoSaveAndBackup();
@@ -1059,10 +1056,10 @@ closeBackupModal();
 alert("데이터가 성공적으로 복원되었습니다!");
 }
 } else {
-alert("올바른 슬기로운업무노트 백업 데이터가 아닙니다.");
+alert("올바른 백업 데이터가 아닙니다.");
 }
 } catch (err) {
-alert("데이터 형식이 올바르지 않습니다. 복사한 전체 텍스트를 빠짐없이 붙여넣어 주세요.");
+alert("데이터 형식이 올바르지 않습니다. 복사한 텍스트 전체를 정확히 붙여넣어 주세요.");
 }
 }
 
@@ -1130,7 +1127,7 @@ closeCanvasModal();
 alert('손글씨 메모가 저장되었습니다.');
 }
 
-/* 카메라 거리 측정 및 화면 끝까지 연장된 조준선 합성 */
+/* 카메라 거리 측정 및 사진 팝업 연결 */
 const measureVideo = document.getElementById('measureCameraStream');
 const measurePhoneHeightInput = document.getElementById('measurePhoneHeight');
 const measureDistanceResult = document.getElementById('measureDistanceResult');
@@ -1218,26 +1215,22 @@ const ctxCapture = canvasCapture.getContext('2d');
 try {
 ctxCapture.drawImage(measureVideo, 0, 0, w, h);
 
-// 화면 끝까지 닿는 연장된 녹색 조준선(+) 그리기
+// 조준선 합성
 const cx = w / 2;
 const cy = h / 2;
 ctxCapture.strokeStyle = "#00ffcc";
 ctxCapture.lineWidth = Math.max(2, w / 220);
 ctxCapture.beginPath();
-// 가로 끝까지
 ctxCapture.moveTo(0, cy);
 ctxCapture.lineTo(w, cy);
-// 세로 끝까지
 ctxCapture.moveTo(cx, 0);
 ctxCapture.lineTo(cx, h);
-// 중앙 타겟 원
 ctxCapture.stroke();
 
 ctxCapture.beginPath();
 ctxCapture.arc(cx, cy, 24, 0, 2 * Math.PI);
 ctxCapture.stroke();
 
-// 하단 거리 워터마크
 const distText = `측정 거리: ${lastCalculatedDistance.toFixed(1)} cm (${new Date().toISOString().slice(0,10)})`;
 const fontSize = Math.max(18, Math.floor(w / 24));
 ctxCapture.font = `bold ${fontSize}px sans-serif`;
@@ -1248,14 +1241,6 @@ ctxCapture.textAlign = "center";
 ctxCapture.fillText(distText, cx, h - fontSize * 0.6);
 
 const dataURL = canvasCapture.toDataURL('image/png');
-
-// 다운로드 시도
-const a = document.createElement('a');
-a.href = dataURL;
-a.download = `거리측정_${new Date().toISOString().slice(0,10)}_${lastCalculatedDistance.toFixed(1)}cm.png`;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
 
 allFarmData[currentFarmId].push({
 type: 'note',
@@ -1271,14 +1256,31 @@ autoSaveAndBackup();
 updateYearFilterOptions(false);
 renderTable();
 closeMeasureModal();
-alert('거리 측정 사진이 저장되었으며 현장 기록표에 등록되었습니다!');
+
+// 측정 직후 사진 팝업창을 띄워 길게 눌러 앨범에 저장하도록 안내
+document.getElementById('modalFullPhotoImg').src = dataURL;
+document.getElementById('photoViewModal').style.display = 'flex';
 } catch (e) {
 console.error(e);
-alert('사진 저장 중 오류가 발생했습니다.');
+alert('사진 캡처 중 오류가 발생했습니다.');
 }
 }
 
-/* 보고서 이미지 캡처 및 미리보기 모달 표시 (APK/웹뷰 저장 오류 완벽 해결) */
+function openPhotoViewModal(url) {
+if (url) {
+document.getElementById('modalFullPhotoImg').src = url;
+}
+document.getElementById('photoViewModal').style.display = 'flex';
+}
+function closePhotoViewModal() {
+document.getElementById('photoViewModal').style.display = 'none';
+}
+function openPhotoFromViewer() {
+const src = document.getElementById('viewFullImage').src;
+if (src) openPhotoViewModal(src);
+}
+
+/* 보고서 이미지 캡처 및 팝업 미리보기 (멈춤 현상 해결) */
 function captureAndShowReportImage() {
 const targetElement = document.getElementById('captureTargetArea');
 html2canvas(targetElement, {
@@ -1293,7 +1295,7 @@ imgEl.src = imageURL;
 
 const fileName = `농가경제_기록표_${farmDetails[currentFarmId].alias}_${new Date().toISOString().slice(0,10)}.png`;
 
-// 자동 다운로드 시도
+document.getElementById('btnDownloadReportImg').onclick = function() {
 try {
 const a = document.createElement('a');
 a.href = imageURL;
@@ -1301,19 +1303,11 @@ a.download = fileName;
 document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
-} catch (e) {}
-
-// 다운로드 버튼 재시도 연결
-document.getElementById('btnDownloadReportImg').onclick = function() {
-const a = document.createElement('a');
-a.href = imageURL;
-a.download = fileName;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
+} catch (e) {
+alert("이 기기에서는 직접 다운로드가 차단되므로 이미지를 길게 눌러 저장해 주세요.");
+}
 };
 
-// 미리보기 모달 열기 (길게 눌러 저장 가능)
 document.getElementById('reportImageModal').style.display = 'flex';
 }).catch(err => {
 console.error(err);
@@ -1323,6 +1317,21 @@ alert('보고서 이미지 생성 중 오류가 발생했습니다.');
 
 function closeReportImageModal() {
 document.getElementById('reportImageModal').style.display = 'none';
+}
+
+/* 2단계 확인 절차를 거치는 농가 데이터 초기화 함수 */
+function confirmClearFarmData() {
+let farmName = farmDetails[currentFarmId].alias;
+let step1 = confirm(`[${farmName}]의 모든 기록을 초기화하시겠습니까? (1/2 단계)`);
+if (!step1) return;
+let step2 = confirm(`정말 초기화됩니다! [${farmName}] 데이터를 완전히 삭제하시겠습니까? (2/2 단계)`);
+if (step2) {
+allFarmData[currentFarmId] = [];
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+alert('현재 농가 데이터가 초기화되었습니다.');
+}
 }
 
 document.querySelectorAll('input[type="date"]').forEach(el => el.valueAsDate = new Date());
@@ -1520,21 +1529,6 @@ allFarmData[currentFarmId].splice(index, 1);
 autoSaveAndBackup();
 updateYearFilterOptions(false);
 renderTable();
-}
-}
-
-function confirmClearFarmData() {
-let step1 = confirm(`[${farmDetails[currentFarmId].alias}] 데이터를 정말 초기화하시겠습니까? (1/3 단계)`);
-if (!step1) return;
-let step2 = confirm('초기화하면 모든 기록이 삭제됩니다. 계속하시겠습니까? (2/3 단계)');
-if (!step2) return;
-let step3 = confirm('마지막 경고입니다! 정말로 현재 농가 데이터를 모두 지우시겠습니까? (3/3 단계)');
-if (step3) {
-allFarmData[currentFarmId] = [];
-autoSaveAndBackup();
-updateYearFilterOptions(false);
-renderTable();
-alert('초기화되었습니다.');
 }
 }
 
