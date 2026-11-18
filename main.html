@@ -27,6 +27,7 @@ font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun G
 -moz-user-select: none;
 -ms-user-select: none;
 user-select: none;
+-webkit-touch-callout: default; /* 이미지 길게 누르기 메뉴 허용 */
 }
 html, body {
 width: 100%;
@@ -615,11 +616,12 @@ line-height: 1.4;
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 현장 기록표 보고서 이미지</h3>
 <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
-아래 이미지를 <strong>길게 눌러 [이미지 저장]</strong>을 선택하세요.
+아래 버튼을 눌러 이미지를 안전하게 저장하세요.
 </p>
-<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:55vh; overflow-y:auto; background:#f9f9f9;">
+<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; max-height:50vh; overflow-y:auto; background:#f9f9f9;">
 <img id="generatedReportImg" style="width:100%; height:auto; display:block;" alt="보고서 이미지">
 </div>
+<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadReportImageDirectly()">💾 이미지 파일로 직접 다운로드</button>
 <div class="btn-group">
 <button class="btn btn-danger" onclick="closeReportImageModal()">닫기</button>
 </div>
@@ -710,10 +712,11 @@ line-height: 1.4;
 <div class="modal-overlay" id="photoViewModal">
 <div class="modal-content" style="text-align:center;">
 <h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 측정 사진 크게 보기</h3>
-<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">사진을 <strong>길게 눌러 [이미지 저장]</strong>을 선택하세요.</p>
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">아래 버튼을 눌러 사진을 저장하세요.</p>
 <div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; background:#000;">
 <img id="modalFullPhotoImg" style="width:100%; height:auto; display:block;" alt="측정사진">
 </div>
+<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadModalPhotoDirectly()">💾 사진 파일로 직접 다운로드</button>
 <div class="btn-group">
 <button class="btn btn-danger" onclick="closePhotoViewModal()">닫기</button>
 </div>
@@ -735,8 +738,8 @@ line-height: 1.4;
 </ul>
 <p><strong>3. 특화 부가 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
-<li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 길게 눌러 저장할 수 있습니다.</li>
-<li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표를 이미지로 변환하여 팝업창에서 길게 눌러 저장할 수 있습니다.</li>
+<li><strong>📏 카메라 거리 측정:</strong> 화면 전체 조준선을 맞추고 촬영하면 팝업창에서 직접 다운로드할 수 있습니다.</li>
+<li><strong>📷 보고서 이미지 저장:</strong> 현장 기록표를 이미지로 변환하여 버튼 클릭 한 번로 저장할 수 있습니다.</li>
 <li><strong>💾 데이터 백업 및 복원:</strong> 앱 내에서 직접 `.json` 백업 파일을 저장하고 불러와 복원할 수 있습니다.</li>
 </ul>
 </div>
@@ -750,8 +753,8 @@ line-height: 1.4;
 <div class="modal-content">
 <h3 style="margin-bottom:12px; color:var(--primary-dark);" id="editModalTitle">기록 수정하기</h3>
 <div id="imageViewerArea" style="display:none; text-align:center; margin-bottom:12px;">
-<img id="viewFullImage" style="max-width:100%; max-height:250px; border:2px solid var(--primary); border-radius:4px; cursor:pointer;" onclick="openPhotoFromViewer()" alt="큰사진">
-<p style="font-size:0.75rem; color:#666; margin-top:4px;">사진을 터치하면 크게 볼 수 있습니다.</p>
+<img id="viewFullImage" style="max-width:100%; max-height:220px; border:2px solid var(--primary); border-radius:4px; cursor:pointer;" onclick="openPhotoFromViewer()" alt="큰사진">
+<button class="btn btn-print" style="width:100%; margin-top:8px;" onclick="downloadViewerPhotoDirectly()">💾 이 사진 파일로 다운로드</button>
 </div>
 <div id="editFormArea">
 <div class="form-group"><label>일자</label><input type="date" id="edit-date"></div>
@@ -767,12 +770,12 @@ line-height: 1.4;
 </div>
 
 <footer>
-<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.47</span></p>
+<p>슬기로운업무노트(농가경제) <span id="footerVersion">v1.0.48</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.47";
+const APP_VERSION = "v1.0.48";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
 let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
@@ -1263,6 +1266,34 @@ const src = document.getElementById('viewFullImage').src;
 if (src) openPhotoViewModal(src);
 }
 
+/* 이미지 직접 다운로드 유틸리티 함수들 */
+function downloadReportImageDirectly() {
+const imgSrc = document.getElementById('generatedReportImg').src;
+if (!imgSrc) { alert('다운로드할 이미지가 없습니다.'); return; }
+triggerDownload(imgSrc, `농가경제_현장기록표_${new Date().toISOString().slice(0,10)}.png`);
+}
+
+function downloadModalPhotoDirectly() {
+const imgSrc = document.getElementById('modalFullPhotoImg').src;
+if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
+triggerDownload(imgSrc, `농가경제_측정사진_${new Date().toISOString().slice(0,10)}.png`);
+}
+
+function downloadViewerPhotoDirectly() {
+const imgSrc = document.getElementById('viewFullImage').src;
+if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
+triggerDownload(imgSrc, `농가경제_기록사진_${new Date().toISOString().slice(0,10)}.png`);
+}
+
+function triggerDownload(url, filename) {
+const a = document.createElement('a');
+a.href = url;
+a.download = filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+}
+
 function captureAndShowReportImage() {
 const targetElement = document.getElementById('captureTargetArea');
 html2canvas(targetElement, {
@@ -1484,6 +1515,7 @@ valStr = val.toLocaleString() + '원';
 allFarmData[currentFarmId].push({ type, date, category, item, val, valStr });
 
 autoSaveAndBackup();
+updateYearTest = true;
 updateYearFilterOptions(false);
 renderTable();
 alert('기록이 저장되었습니다.');
