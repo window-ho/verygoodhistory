@@ -273,6 +273,8 @@ text-align: center;
 word-break: break-all;
 }
 th { background-color: #f2f2f2; }
+.clickable-row { cursor: pointer; transition: background-color 0.2s; }
+.clickable-row:hover { background-color: #e8f5e9; }
 
 .modal-overlay {
 display: none;
@@ -676,6 +678,20 @@ line-height: 1.4;
 </div>
 </div>
 
+<div class="modal-overlay" id="photoViewModal">
+<div class="modal-content" style="text-align:center;">
+<h3 style="margin-bottom:8px; color:var(--primary-dark);">📷 측정 사진 크게 보기</h3>
+<p style="font-size:0.8rem; color:#666; margin-bottom:10px;">사진을 꾹 눌러 저장하거나 아래 버튼을 누르세요.</p>
+<div style="border:1px solid #ccc; border-radius:4px; overflow:hidden; margin-bottom:12px; background:#000;">
+<img id="modalFullPhotoImg" style="width:100%; height:auto; display:block;" alt="측정사진">
+</div>
+<button class="btn btn-print" style="width:100%; margin-bottom:8px;" onclick="downloadModalPhotoDirectly()">💾 사진 파일로 직접 다운로드</button>
+<div class="btn-group">
+<button class="btn btn-danger" onclick="closePhotoViewModal()">닫기</button>
+</div>
+</div>
+</div>
+
 <div class="modal-overlay" id="manualModal">
 <div class="modal-content">
 <h3 style="margin-bottom:12px; color:var(--primary-dark);">📖 슬기로운농가생활 사용설명서</h3>
@@ -685,9 +701,10 @@ line-height: 1.4;
 <li>상단에서 조사할 농가를 선택하거나 <strong>[+ 새 농가]</strong>를 등록하세요.</li>
 <li>조회 기간은 기본적으로 <strong>당월(이번 달)</strong>이 우선 표시되며, 연도/월 필터를 변경하여 조회할 수 있습니다.</li>
 </ul>
-<p><strong>2. 주요 입력 기능</strong></p>
+<p><strong>2. 주요 입력 기능 및 수정</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
 <li><strong>작물/파종, 농작물수입, 수입표, 지출표, 작업시간, 조세:</strong> 영농 활동 및 수지 내역을 체계적으로 입력합니다.</li>
+<li>현장 기록표의 각 항목을 터치하면 수정 팝업이 열려 내용을 변경할 수 있습니다.</li>
 </ul>
 <p><strong>3. 특화 부가 기능</strong></p>
 <ul style="margin-left:20px; margin-bottom:10px;">
@@ -701,19 +718,40 @@ line-height: 1.4;
 </div>
 </div>
 
+<div class="modal-overlay" id="editModal">
+<div class="modal-content">
+<h3 style="margin-bottom:12px; color:var(--primary-dark);" id="editModalTitle">기록 수정하기</h3>
+<div id="imageViewerArea" style="display:none; text-align:center; margin-bottom:12px;">
+<img id="viewFullImage" style="max-width:100%; max-height:220px; border:2px solid var(--primary); border-radius:4px; cursor:pointer;" onclick="openPhotoFromViewer()" alt="큰사진">
+<button class="btn btn-print" style="width:100%; margin-top:8px;" onclick="downloadViewerPhotoDirectly()">💾 이 사진 파일로 다운로드</button>
+</div>
+<div id="editFormArea">
+<div class="form-group"><label>일자</label><input type="date" id="edit-date"></div>
+<div class="form-group"><label>항목/내용</label><input type="text" id="edit-item"></div>
+<div class="form-group"><label>수량/시간/금액 표시</label><input type="text" id="edit-valStr"></div>
+<div class="form-group"><label>수치값(원 또는 시간)</label><input type="number" id="edit-val"></div>
+</div>
+<div class="btn-group">
+<button class="btn btn-save" id="btnSaveEdit" onclick="saveEditedRecord()">수정 저장</button>
+<button class="btn btn-danger" onclick="closeEditModal()">닫기</button>
+</div>
+</div>
+</div>
+
 <footer>
-<p>슬기로운농가생활 <span id="footerVersion">v1.0.57</span></p>
+<p>슬기로운농가생활 <span id="footerVersion">v1.0.58</span></p>
 <p>Copyright ⓒ <strong>windowho@korea.kr</strong> All Rights Reserved.</p>
 </footer>
 
 <script>
-const APP_VERSION = "v1.0.57";
+const APP_VERSION = "v1.0.58";
 const IMAGE_SITE_URL = "https://window-ho.github.io/verygoodhistory/img.html";
 document.getElementById('footerVersion').innerText = APP_VERSION;
 
 let farmDetails = JSON.parse(localStorage.getItem('farm_app_details_v1031')) || {};
 let allFarmData = JSON.parse(localStorage.getItem('farm_app_all_data_v1031')) || {};
 let currentFarmId = localStorage.getItem('farm_app_current_v1031') || 'farm_01';
+let editingIndex = -1;
 
 if (Object.keys(farmDetails).length === 0) {
 farmDetails['farm_01'] = { alias: '농가01', owner: '', family: '', phone: '', address: '', updatedAt: Date.now() };
@@ -982,7 +1020,7 @@ date: new Date().toISOString().slice(0,10),
 category: '손글씨메모',
 item: noteTitle,
 val: 0,
-valStr: `<img src="${dataURL}" style="max-width:120px; max-height:50px; border:1px solid #ccc; vertical-align:middle;" alt="손글씨">`,
+valStr: `<img src="${dataURL}" style="max-width:120px; max-height:50px; border:1px solid #ccc; vertical-align:middle; cursor:pointer;" alt="손글씨">`,
 imgData: dataURL
 });
 
@@ -1113,7 +1151,7 @@ date: new Date().toISOString().slice(0,10),
 category: '거리측정',
 item: `카메라 거리측정 (${lastCalculatedDistance.toFixed(1)}cm)`,
 val: lastCalculatedDistance,
-valStr: `${lastCalculatedDistance.toFixed(1)} cm<br><img src="${dataURL}" style="max-width:100px; max-height:60px; border:1px solid #ccc; margin-top:4px; vertical-align:middle;" alt="측정사진">`,
+valStr: `${lastCalculatedDistance.toFixed(1)} cm<br><img src="${dataURL}" style="max-width:100px; max-height:60px; border:1px solid #ccc; margin-top:4px; vertical-align:middle; cursor:pointer;" alt="측정사진">`,
 imgData: dataURL
 });
 
@@ -1126,6 +1164,41 @@ alert('측정 사진이 현장 기록표에 저장되었습니다.');
 console.error(e);
 alert('사진 캡처 중 오류가 발생했습니다.');
 }
+}
+
+function openPhotoViewModal(url) {
+if (url) {
+document.getElementById('modalFullPhotoImg').src = url;
+}
+document.getElementById('photoViewModal').style.display = 'flex';
+}
+function closePhotoViewModal() {
+document.getElementById('photoViewModal').style.display = 'none';
+}
+function openPhotoFromViewer() {
+const src = document.getElementById('viewFullImage').src;
+if (src) openPhotoViewModal(src);
+}
+
+function downloadModalPhotoDirectly() {
+const imgSrc = document.getElementById('modalFullPhotoImg').src;
+if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
+triggerDownload(imgSrc, `슬기로운농가생활_측정사진_${new Date().toISOString().slice(0,10)}.png`);
+}
+
+function downloadViewerPhotoDirectly() {
+const imgSrc = document.getElementById('viewFullImage').src;
+if (!imgSrc) { alert('다운로드할 사진이 없습니다.'); return; }
+triggerDownload(imgSrc, `슬기로운농가생활_기록사진_${new Date().toISOString().slice(0,10)}.png`);
+}
+
+function triggerDownload(url, filename) {
+const a = document.createElement('a');
+a.href = url;
+a.download = filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
 }
 
 let html2CanvasLoadPromise = null;
@@ -1264,7 +1337,7 @@ function fallbackCopyText(text) {
 
 function openExternalImageBrowser() {
   if (/android/i.test(navigator.userAgent)) {
-    window.location.href = 'intent://window-ho.github.io/ind/img.html#Intent;scheme=https;package=com.android.chrome;end;';
+    window.location.href = 'intent://window-ho.github.io/verygoodhistory/img.html#Intent;scheme=https;package=com.android.chrome;end;';
   } else {
     window.open(IMAGE_SITE_URL, '_blank');
   }
@@ -1345,7 +1418,8 @@ if (fYear !== 'all' && itemYear !== fYear) return;
 if (fMonth !== 'all' && itemMonth !== fMonth) return;
 
 const tr = document.createElement('tr');
-tr.innerHTML = `<td>${item.date}</td><td>${item.category}</td><td>${item.item}</td><td>${item.valStr}</td><td><button onclick="deleteRecord(${index})">X</button></td>`;
+tr.className = 'clickable-row';
+tr.innerHTML = `<td onclick="openEditModal(${index})">${item.date}</td><td onclick="openEditModal(${index})">${item.category}</td><td onclick="openEditModal(${index})">${item.item}</td><td onclick="openEditModal(${index})">${item.valStr}</td><td><button onclick="deleteRecord(${index})">X</button></td>`;
 tbody.appendChild(tr);
 
 if (item.type === 'cropInc') cropIncSum += item.val;
@@ -1360,6 +1434,44 @@ document.getElementById('expenseSum').innerText = expSum.toLocaleString();
 document.getElementById('workTimeSum').innerText = workSum;
 
 autoSaveAndBackup();
+}
+
+function openEditModal(index) {
+editingIndex = index;
+const item = allFarmData[currentFarmId][index];
+document.getElementById('editModalTitle').innerText = item.imgData ? '사진 및 기록 크게 보기' : '기록 수정하기';
+
+if (item.imgData) {
+document.getElementById('imageViewerArea').style.display = 'block';
+document.getElementById('viewFullImage').src = item.imgData;
+} else {
+document.getElementById('imageViewerArea').style.display = 'none';
+}
+
+document.getElementById('edit-date').value = item.date;
+document.getElementById('edit-item').value = item.item;
+document.getElementById('edit-valStr').value = item.valStr.replace(/<[^>]*>?/gm, '');
+document.getElementById('edit-val').value = item.val;
+
+document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+function saveEditedRecord() {
+if (editingIndex === -1) return;
+const item = allFarmData[currentFarmId][editingIndex];
+
+item.date = document.getElementById('edit-date').value;
+item.item = document.getElementById('edit-item').value;
+item.val = Number(document.getElementById('edit-val').value) || 0;
+if (!item.imgData) item.valStr = document.getElementById('edit-valStr').value;
+
+autoSaveAndBackup();
+updateYearFilterOptions(false);
+renderTable();
+closeEditModal();
+alert('수정 내용이 저장되었습니다.');
 }
 
 function saveIncomeRecord() {
